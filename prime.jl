@@ -3,6 +3,7 @@
 using PyPlot;
 using WriteVTK;
 using CPUTime;
+using Distributed;
 using BSON: @load
 using BSON: @save
 
@@ -10,7 +11,7 @@ using BSON: @save
 ## calculateNode2cellsL2matrix - verify 
 ## computeCellStiffness2D - SPEEDUP
 
-
+include("primeObjects.jl"); ## solver2d objects and controls 
 include("readGambitNeuFile.jl");
 include("utilsMesh2D.jl");
 include("preprocessing.jl");

@@ -6,33 +6,6 @@ using BSON: @load
 using BSON: @save
 
 
-struct mesh2d
-	nCells::Int64
-	nNodes::Int64
-	nBSets::Int64
-	xNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
-	yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
-	mesh_connectivity::Array{Float64,2} 	## [nCellsx3]
-	bc_data::Array{Int64,2}
-	bc_indexes::Array{Int64,1}
-	cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
-	cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
-	cell_mid_points::Array{Float64,2} 		## [nCellsx2]
-	cell_areas::Array{Float64,1} 			## [nCellsx1]
-	Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
-	cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
-	cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
-	cell_edges_length::Array{Float64,2} 	## [nCellsx4]
-	cell_stiffness::Array{Float64,2} 		## [nCellsx4]
-	cell_clusters::Array{Float64,2} 		## [nNodesx8]
-	node_stencils::Array{Float64,2} 		## [nNodesx8]
-	#cell2nodes::Array{Float64,2} 			## [nCellsx8]
-	# AUX:
-	#node2cellsL2up::Array{Float64,2} 		## [nCellsx3]
-	#node2cellsL2down::Array{Float64,2} 		## [nCellsx3]
-end
-
-
 function saveMeshToVTK(
 	nCells::Int64,  ##number of cells
 	nNodes::Int64,  ##number of nodes
@@ -131,7 +104,7 @@ function preProcess(meshFile::String)
 		# minX minY
 	# ];
 
-	nNeibCells = 8; 
+	nNeibCells::Int64 = 8; 
 
 	display("compute cells-related data...");
 	(cell_nodes_X, cell_nodes_Y, cell_mid_points) = reconstructionCells2Nodes2D(nCells,mesh_nodes,mesh_connectivity); #ok
@@ -219,6 +192,7 @@ function preProcess(meshFile::String)
 	testMesh = mesh2d(
 		nCells,
 		nNodes,
+		nNeibCells,
 		nBSets,
 		xNodes,
 		yNodes,
