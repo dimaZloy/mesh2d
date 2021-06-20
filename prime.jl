@@ -17,8 +17,6 @@ include("utilsMesh2D.jl");
 include("preprocessing.jl");
 
 
-
-
 preProcess("testMesh00.neu");
 preProcess("testMesh01.neu");
 

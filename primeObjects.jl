@@ -20,6 +20,8 @@ struct mesh2d
 	cell_stiffness::Array{Float64,2} 		## [nCellsx4]
 	cell_clusters::Array{Float64,2} 		## [nNodesx8]
 	node_stencils::Array{Float64,2} 		## [nNodesx8]
+	maxArea::Float64
+	VTKCells::Array{MeshCell,1}
 	#cell2nodes::Array{Float64,2} 			## [nCellsx8]
 	# AUX:
 	#node2cellsL2up::Array{Float64,2} 		## [nCellsx3]

@@ -6,59 +6,55 @@ using BSON: @load
 using BSON: @save
 
 
-function saveMeshToVTK(
-	nCells::Int64,  ##number of cells
-	nNodes::Int64,  ##number of nodes
-	xNodes::Array{Float64,1}, ## x-coordinate of nodes
-	yNodes::Array{Float64,1}, ## x-coordinate of nodes
-	mesh_connectivity::Array{Int64,2},  ## mesh connectivity
-	vtkFileName::String  ## VTK file name
-	)
+## saveMeshToVTK::DEPRICATED!!! 
 
+# function saveMeshToVTK(
+	# nCells::Int64,  ##number of cells
+	# nNodes::Int64,  ##number of nodes
+	# xNodes::Array{Float64,1}, ## x-coordinate of nodes
+	# yNodes::Array{Float64,1}, ## x-coordinate of nodes
+	# mesh_connectivity::Array{Int64,2},  ## mesh connectivity
+	# vtkFileName::String  ## VTK file name
+	# )
 
-	cells = MeshCell[];
-	#celltypeTri = VTKCellTypes.VTK_TRIANGLE;
-	#celltypeQuad = VTKCellTypes.VTK_QUAD;
+	# cells = MeshCell[];
 	
-	for i=1:nCells
+	# for i=1:nCells
 	
-		cellType = mesh_connectivity[i,2];
-		if (cellType == 2) ## quads
-			inds = Array{Int32}(undef, 4);
-			inds[1] = mesh_connectivity[i,4];
-			inds[2] = mesh_connectivity[i,5];
-			inds[3] = mesh_connectivity[i,6];
-			inds[4] = mesh_connectivity[i,7];
-			c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
-			push!(cells, c);
+		# cellType = mesh_connectivity[i,2];
+		# if (cellType == 2) ## quads
+			# inds = Array{Int32}(undef, 4);
+			# inds[1] = mesh_connectivity[i,4];
+			# inds[2] = mesh_connectivity[i,5];
+			# inds[3] = mesh_connectivity[i,6];
+			# inds[4] = mesh_connectivity[i,7];
+			# c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
+			# push!(cells, c);
 		
-		elseif (cellType == 3) ## triangle
+		# elseif (cellType == 3) ## triangle
 	
-			inds = Array{Int32}(undef, 3);
-			inds[1] = mesh_connectivity[i,4];
-			inds[2] = mesh_connectivity[i,5];
-			inds[3] = mesh_connectivity[i,6];
-			c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
-			push!(cells, c);
-		end
-	end
+			# inds = Array{Int32}(undef, 3);
+			# inds[1] = mesh_connectivity[i,4];
+			# inds[2] = mesh_connectivity[i,5];
+			# inds[3] = mesh_connectivity[i,6];
+			# c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
+			# push!(cells, c);
+		# end
+	# end
 
-	vtkfile = vtk_grid(vtkFileName, xNodes,yNodes, cells);
-	densityNodes = zeros(Float64,nNodes);
-	vtk_point_data(vtkfile, densityNodes, "dummy");
-	outfiles = vtk_save(vtkfile);	
+	# vtkfile = vtk_grid(vtkFileName, xNodes,yNodes, cells);
+	# densityNodes = zeros(Float64,nNodes);
+	# vtk_point_data(vtkfile, densityNodes, "dummy");
+	# outfiles = vtk_save(vtkfile);	
 
-end
+# end
 
 
 function preProcess(meshFile::String)
 
-	#meshFile = "testMesh00.neu";
-	#meshFile = "testMesh01.neu";
 	
 	debugPlotMesh = false;
 
-	##nCells, nNodes,  nBSets,  mesh_nodes,  mesh_connectivity,  BCNames,  BCindexes,  bc_data = readGambitNeuFile2(meshFile);
 	nCells, nNodes,  nBSets,  mesh_nodes,  mesh_connectivity,  BCNames, bc_indexes,  bc_data = readGambitNeuFile2(meshFile);
 	
 	##bc_indexes  = convertBCdata(nBSets, BCindexes,bc_data );
@@ -96,13 +92,6 @@ function preProcess(meshFile::String)
 	println("minY=", minY);
 	println("maxY=", maxY);
 
-	# const boundingBox = [
-		# minX minY
-		# maxX minY
-		# maxX maxY
-		# minX maxY
-		# minX minY
-	# ];
 
 	nNeibCells::Int64 = 8; 
 
@@ -125,8 +114,6 @@ function preProcess(meshFile::String)
 	(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
 
 
-
-
 	display("compute cells connectivity...");
 	CPUtic();
 	cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
@@ -146,7 +133,6 @@ function preProcess(meshFile::String)
 
 		# z = mesh_connectivity[i,2];
 		   
-
 		# if (z ==2)
 
 			# xN[1,i] =		  cell_nodes_X[i,1];
@@ -154,12 +140,10 @@ function preProcess(meshFile::String)
 			# xN[3,i] =		  cell_nodes_X[i,3];
 			# xN[4,i] =		  cell_nodes_X[i,1];
 
-
 			# yN[1,i] =		  cell_nodes_Y[i,1];
 			# yN[2,i] =		  cell_nodes_Y[i,2];
 			# yN[3,i] =		  cell_nodes_Y[i,3];
 			# yN[4,i] =		  cell_nodes_Y[i,1];
-
 
 		# elseif (z == 3)
 
@@ -168,19 +152,14 @@ function preProcess(meshFile::String)
 			# xN[3,i] =		  cell_nodes_X[i,3];
 			# xN[4,i] =		  cell_nodes_X[i,1];
 
-
 			# yN[1,i] =		  cell_nodes_Y[i,1];
 			# yN[2,i] =		  cell_nodes_Y[i,2];
 			# yN[3,i] =		  cell_nodes_Y[i,3];
 			# yN[4,i] =		  cell_nodes_Y[i,1];
 
-			
 		# end #if
 
-
 	# end #for
-
-
 
 	#display("compute node2cellsL2 matrix ... ");
 	#include("nodes2cellsL2.jl");
@@ -188,6 +167,36 @@ function preProcess(meshFile::String)
 
 	Z = 1.0 ./cell_areas;
 
+	(maxAreaI,id) = findmax(cell_areas);
+	maxArea = sqrt(maxAreaI);
+	
+	
+	VTKCells = MeshCell[];
+	
+	for i=1:nCells
+	
+		cellType::Int64 = mesh_connectivity[i,2];
+		
+		if (cellType == 2) ## quads
+			inds = Array{Int32}(undef, 4);
+			inds[1] = mesh_connectivity[i,4];
+			inds[2] = mesh_connectivity[i,5];
+			inds[3] = mesh_connectivity[i,6];
+			inds[4] = mesh_connectivity[i,7];
+			c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
+			push!(VTKCells, c);
+		
+		elseif (cellType == 3) ## triangle
+	
+			inds = Array{Int32}(undef, 3);
+			inds[1] = mesh_connectivity[i,4];
+			inds[2] = mesh_connectivity[i,5];
+			inds[3] = mesh_connectivity[i,6];
+			c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
+			push!(VTKCells, c);
+		end
+	end
+	
 
 	testMesh = mesh2d(
 		nCells,
@@ -210,11 +219,14 @@ function preProcess(meshFile::String)
 		cell_stiffness,
 		cell_clusters,
 		node_stencils,
+		maxArea,
+		VTKCells
 		# cell2nodes,
 		# AUX:
 		# node2cellsL2up,
 		# node2cellsL2down
 	);
+
 
 	fname = split(meshFile, ".");
 	
@@ -222,7 +234,14 @@ function preProcess(meshFile::String)
 	fnameVTK =  string(fname[1])
 	
 	@save fnameBSON testMesh
-	saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
 	
-
+	#saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
+	
+	vtkfile = vtk_grid(fnameVTK, xNodes,yNodes, VTKCells);
+	densityNodes = zeros(Float64,nNodes);
+	vtk_point_data(vtkfile, densityNodes, "dummy");
+	outfiles = vtk_save(vtkfile);	
+	
+	
+	
 end
