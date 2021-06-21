@@ -1,82 +1,88 @@
 
-using PyPlot;
+# using PyPlot;
 
-using Pkg;
-using Dates;
-using Printf;
-using DelimitedFiles;
-using CPUTime;
-using WriteVTK;
-using Distributed;
-using BSON: @load
-using BSON: @save
-
-
-include("primeObjects.jl");	
-include("utilsMesh2D.jl");	
-include("preprocessing.jl");	
-
-include("simpleTriMesh.jl");	
+# using Pkg;
+# using Dates;
+# using Printf;
+# using DelimitedFiles;
+# using CPUTime;
+# using WriteVTK;
+# using Distributed;
+# using BSON: @load
+# using BSON: @save
 
 
-println("nNodes=", nNodes);
-println("nCells=", nCells);
+# include("primeObjects.jl");	
+# include("utilsMesh2D.jl");	
+# include("preprocessing.jl");	
+
+function preProcessSimpleTriMesh()
 
 
-xNodes = zeros(Float64, nNodes);
-yNodes = zeros(Float64, nNodes);
-
-xNodes = mesh_nodes[:,2];
-yNodes = mesh_nodes[:,3];
-
-display("calculate bounding box for the computational domain ...");
-
-(minX,txt) = findmin(xNodes); 
-(maxX,txt) = findmax(xNodes);
-
-(minY,txt) = findmin(yNodes);
-(maxY,txt) = findmax(yNodes);
+	include("simpleTriMesh.jl");	
 
 
-println("minX=", minX);
-println("maxX=", maxX);
-println("minY=", minY);
-println("maxY=", maxY);
-
-nNeibCells = 8; 
-
-display("compute cells-related data...");
-(cell_nodes_X, cell_nodes_Y, cell_mid_points) = reconstructionCells2Nodes2D(nCells,mesh_nodes,mesh_connectivity); #ok
-
-xCells = zeros(Float64, nCells);
-yCells = zeros(Float64, nCells);
-xCells = cell_mid_points[:,1];
-yCells = cell_mid_points[:,2];
-
-display("compute cell areas...");
-cell_areas = computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
+	println("nNodes=", nNodes);
+	println("nCells=", nCells);
 
 
-display("compute edge normals...");
-(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
+	xNodes = zeros(Float64, nNodes);
+	yNodes = zeros(Float64, nNodes);
+
+	xNodes = mesh_nodes[:,2];
+	yNodes = mesh_nodes[:,3];
+
+	display("calculate bounding box for the computational domain ...");
+
+	(minX,txt) = findmin(xNodes); 
+	(maxX,txt) = findmax(xNodes);
+
+	(minY,txt) = findmin(yNodes);
+	(maxY,txt) = findmax(yNodes);
 
 
-display("compute cells connectivity...");
-CPUtic();
-cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
-CPUtoc();
+	println("minX=", minX);
+	println("maxX=", maxX);
+	println("minY=", minY);
+	println("maxY=", maxY);
 
-display("compute cell clusters...");
-cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
+	nNeibCells = 8; 
 
-display("compute node stencils...");
-node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, nNeibCells, mesh_nodes,cell_clusters, cell_mid_points); 
+	display("compute cells-related data...");
+	(cell_nodes_X, cell_nodes_Y, cell_mid_points) = reconstructionCells2Nodes2D(nCells,mesh_nodes,mesh_connectivity); #ok
 
-Z = 1.0 ./cell_areas;
+	xCells = zeros(Float64, nCells);
+	yCells = zeros(Float64, nCells);
+	xCells = cell_mid_points[:,1];
+	yCells = cell_mid_points[:,2];
+
+	display("compute cell areas...");
+	cell_areas = computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
+
+
+	display("compute edge normals...");
+	(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
+
+
+	display("compute cells connectivity...");
+	CPUtic();
+	cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	CPUtoc();
+
+	display("compute cell clusters...");
+	cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
+
+	display("compute node stencils...");
+	node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, nNeibCells, mesh_nodes,cell_clusters, cell_mid_points); 
+
+	Z = 1.0 ./cell_areas;
 
 
 	(maxAreaI,id) = findmax(cell_areas);
 	maxArea = sqrt(maxAreaI);
+
+	(maxSide,id) = findmax(cell_edges_length);
+	maxSideLength = maxSide;
 	
 	
 	VTKCells = MeshCell[];
@@ -128,6 +134,7 @@ Z = 1.0 ./cell_areas;
 		cell_clusters,
 		node_stencils,
 		maxArea,
+		maxSideLength,
 		VTKCells
 		# cell2nodes,
 		# AUX:
@@ -148,3 +155,4 @@ Z = 1.0 ./cell_areas;
 	vtk_point_data(vtkfile, densityNodes, "dummy");
 	outfiles = vtk_save(vtkfile);	
 
+end

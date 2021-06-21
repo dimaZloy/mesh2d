@@ -6,49 +6,6 @@ using BSON: @load
 using BSON: @save
 
 
-## saveMeshToVTK::DEPRICATED!!! 
-
-# function saveMeshToVTK(
-	# nCells::Int64,  ##number of cells
-	# nNodes::Int64,  ##number of nodes
-	# xNodes::Array{Float64,1}, ## x-coordinate of nodes
-	# yNodes::Array{Float64,1}, ## x-coordinate of nodes
-	# mesh_connectivity::Array{Int64,2},  ## mesh connectivity
-	# vtkFileName::String  ## VTK file name
-	# )
-
-	# cells = MeshCell[];
-	
-	# for i=1:nCells
-	
-		# cellType = mesh_connectivity[i,2];
-		# if (cellType == 2) ## quads
-			# inds = Array{Int32}(undef, 4);
-			# inds[1] = mesh_connectivity[i,4];
-			# inds[2] = mesh_connectivity[i,5];
-			# inds[3] = mesh_connectivity[i,6];
-			# inds[4] = mesh_connectivity[i,7];
-			# c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
-			# push!(cells, c);
-		
-		# elseif (cellType == 3) ## triangle
-	
-			# inds = Array{Int32}(undef, 3);
-			# inds[1] = mesh_connectivity[i,4];
-			# inds[2] = mesh_connectivity[i,5];
-			# inds[3] = mesh_connectivity[i,6];
-			# c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
-			# push!(cells, c);
-		# end
-	# end
-
-	# vtkfile = vtk_grid(vtkFileName, xNodes,yNodes, cells);
-	# densityNodes = zeros(Float64,nNodes);
-	# vtk_point_data(vtkfile, densityNodes, "dummy");
-	# outfiles = vtk_save(vtkfile);	
-
-# end
-
 
 function preProcess(meshFile::String)
 
@@ -170,6 +127,8 @@ function preProcess(meshFile::String)
 	(maxAreaI,id) = findmax(cell_areas);
 	maxArea = sqrt(maxAreaI);
 	
+	(maxSide,id) = findmax(cell_edges_length);
+	maxSideLength = maxSide;
 	
 	VTKCells = MeshCell[];
 	
@@ -220,6 +179,7 @@ function preProcess(meshFile::String)
 		cell_clusters,
 		node_stencils,
 		maxArea,
+		maxSideLength,
 		VTKCells
 		# cell2nodes,
 		# AUX:

@@ -15,10 +15,11 @@ include("primeObjects.jl"); ## solver2d objects and controls
 include("readGambitNeuFile.jl");
 include("utilsMesh2D.jl");
 include("preprocessing.jl");
+include("preprocessSimpleTriMesh.jl");
 
 
-preProcess("testMesh00.neu");
-preProcess("testMesh01.neu");
-
+#preProcess("testMesh00.neu");
+#preProcess("testMesh01.neu");
+preProcessSimpleTriMesh();
 
 

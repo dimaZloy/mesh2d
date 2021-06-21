@@ -1,5 +1,29 @@
 
-struct mesh2d
+@everywhere mutable struct fields2d	
+	
+	## even more slowly !!!
+	##UphsCells::Array{Float64,2} 
+	##UphsNodes::Array{Float64,2}
+	
+	densityCells::Array{Float64,1}
+	UxCells::Array{Float64,1}
+	UyCells::Array{Float64,1}
+	pressureCells::Array{Float64,1}
+	aSoundCells::Array{Float64,1}
+	VMAXCells::Array{Float64,1}
+
+	densityNodes::Array{Float64,1}
+	UxNodes::Array{Float64,1}
+	UyNodes::Array{Float64,1}
+	pressureNodes::Array{Float64,1}
+	
+	#UconsCellsOld::Array{Float64,2}
+	#UconsCellsNew::Array{Float64,2}
+
+end
+
+
+@everywhere struct mesh2d
 	nCells::Int64
 	nNodes::Int64
 	nNeibCells::Int64						## max number of neighbors 
@@ -21,6 +45,7 @@ struct mesh2d
 	cell_clusters::Array{Float64,2} 		## [nNodesx8]
 	node_stencils::Array{Float64,2} 		## [nNodesx8]
 	maxArea::Float64
+	maxEdgeLength::Float64
 	VTKCells::Array{MeshCell,1}
 	#cell2nodes::Array{Float64,2} 			## [nCellsx8]
 	# AUX:
@@ -48,62 +73,64 @@ end
 
 
 @everywhere struct SOLVER2D
-	FLUXtype::Int8;
-	FLUXlimiter::Int8;	
-	SpatialDiscretization::Int8;
-	TimeDiscretization::Int8;
+	FLUXtype::Int8
+	FLUXlimiter::Int8
+	SpatialDiscretization::Int8
+	TimeDiscretization::Int8
 end
 
 @everywhere struct CONTROLS
-	CFL::Float64;
-	dt::Float64; # time step
-	timeStepMethod::Int8;  # fixed or #adaptive
-	startTime::Float64; # actual physical time to start simulation
-	stopTime::Float64; # actual physical time to stop simulation 
-	plotResidual::Int8; # flag to plot residuals
-	densityConstrained::Int8; # flag to constrain density
-	minDensityConstrained::Float64;
+	CFL::Float64
+	dt::Float64 # time step
+	timeStepMethod::Int8  # fixed or #adaptive
+	startTime::Float64 # actual physical time to start simulation
+	stopTime::Float64 # actual physical time to stop simulation 
+	plotResidual::Int8 # flag to plot residuals
+	densityConstrained::Int8 # flag to constrain density
+	minDensityConstrained::Float64
 	maxDensityConstrained::Float64
 end
 
 struct plotCONTROLS
-	contoursType::Int8; # 0 - filled contours , 1 - contour lines only
-	nContours::Int8; # number of contours to plot 
-	rhoMINcont::Float64; #min density
-	rhoMAXcont::Float64; #max density 
+	contoursType::Int8 # 0 - filled contours , 1 - contour lines only
+	nContours::Int8 # number of contours to plot 
+	rhoMINcont::Float64 #min density
+	rhoMAXcont::Float64 #max density 
 	productionVideo::Int8 # flag to production video 
 end
 
-struct MESH
-	nCells::Int64; #number of cells
-	nNodes::Int64; #number of nodes
-	HX::Float64; # max cell size  in domain 
-	maxXcoord::Float64; # bounding box: max x
-	minXcoord::Float64; # bounding box: min x
-	maxYcoord::Float64; # bounding box: max y
-	minYcoord::Float64;	# bounding box: max y
-end
+# struct MESH
+	# nCells::Int64; #number of cells
+	# nNodes::Int64; #number of nodes
+	# HX::Float64; # max cell size  in domain 
+	# maxXcoord::Float64; # bounding box: max x
+	# minXcoord::Float64; # bounding box: min x
+	# maxYcoord::Float64; # bounding box: max y
+	# minYcoord::Float64;	# bounding box: max y
+# end
 
 struct outputCONTROLS
-	verbosity::Int8;  
-	header::String; 
-	saveResiduals::Int8;
-	saveResults::Int8; 
-	fileNameResults::String;
-	fileNameResiduals::String;
+	verbosity::Int8
+	header::String 
+	saveResiduals::Int8
+	saveResults::Int8
+	fileNameResults::String
+	fileNameResiduals::String
+	saveDataToVTK::Int8
+	fileNameVTK::String
 end
 
 mutable struct DYNAMICCONTROLS
-	flowTime::Float64; # actual physical time
-	cpuTime::Float64; # cpu time
-	tau::Float64; # tau 
-	verIter::Int64; # iterator for verbosity (output)
-	curIter::Int64; # global iterator for time steppings
-	rhoMax::Float64; #max denisty in domain
-	rhoMin::Float64; #min density in domain;
-	velmax::Float64; #max velocity in domain
-    globalPath::String; # loacl path to the code
-	localTestPath::String; #path to the test 
-	isSolutionConverged::Int8; # flag to show if the convergence criteria is satisfied
-	isRunSimulation::Int8;  # flag to run or stop Simulation
+	flowTime::Float64 # actual physical time
+	cpuTime::Float64 # cpu time
+	tau::Float64 # tau 
+	verIter::Int64 # iterator for verbosity (output)
+	curIter::Int64 # global iterator for time steppings
+	rhoMax::Float64 #max denisty in domain
+	rhoMin::Float64 #min density in domain;
+	velmax::Float64 #max velocity in domain
+    globalPath::String # loacl path to the code
+	localTestPath::String #path to the test 
+	isSolutionConverged::Int8 # flag to show if the convergence criteria is satisfied
+	isRunSimulation::Int8  # flag to run or stop Simulation
 end
