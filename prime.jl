@@ -16,10 +16,13 @@ include("readGambitNeuFile.jl");
 include("utilsMesh2D.jl");
 include("preprocessing.jl");
 include("preprocessSimpleTriMesh.jl");
+include("preprocessSimpleQuadMesh.jl");
 
 
-#preProcess("testMesh00.neu");
-#preProcess("testMesh01.neu");
+preProcess("testMixedMesh2d.neu");
 preProcessSimpleTriMesh();
+preProcessSimpleQuadMesh();
+preProcess("testMeshStep2d.neu");
+
 
 

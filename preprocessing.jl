@@ -73,7 +73,8 @@ function preProcess(meshFile::String)
 
 	display("compute cells connectivity...");
 	CPUtic();
-	cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	#cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	cell_stiffness = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
 	CPUtoc();
 
 	display("compute cell clusters...");

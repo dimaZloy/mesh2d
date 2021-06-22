@@ -1,20 +1,20 @@
 
 
-display("Simple 2d-tri-mesh ...");
+display("Simple 2d-quad-mesh ...");
 display("reading mesh data...");
 
 display("read mesh nodes ... ");
-include( "p.jl");
+include( "pQuad.jl");
 nNodes = size(mesh_nodes,1); # number of nodes;
 
 display("read mech connectivity ... ");
-include( "c.jl" );
-nCells = size(mesh_connectivityTri,1); #number of cells
+include( "cQuad.jl" );
+nCells = size(mesh_connectivityQuad,1); #number of cells
 
 
 mesh_connectivity = zeros(Int64, nCells, 7);
 for f=1:nCells
-    mesh_connectivity[f,1:6] = 	mesh_connectivityTri[f,1:6];	
+    mesh_connectivity[f,1:7] = 	mesh_connectivityQuad[f,1:7];	
 end
 
 # mesh_connectivity has the following format (nCells x 7):
@@ -26,7 +26,7 @@ end
 # 4 nodes for quad mesh 
 
 display("read mesh boundaries ... ");
-include( "b.jl" );
+include( "bQuad.jl" );
 
 
 #bc_indexes[1:size(bctop,1)] = -1;

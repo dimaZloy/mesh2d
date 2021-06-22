@@ -16,10 +16,10 @@
 # include("utilsMesh2D.jl");	
 # include("preprocessing.jl");	
 
-function preProcessSimpleTriMesh()
+function preProcessSimpleQuadMesh()
 
 
-	include("simpleTriMesh.jl");	
+	include("simpleQuadMesh.jl");	
 
 
 	println("nNodes=", nNodes);
@@ -47,6 +47,9 @@ function preProcessSimpleTriMesh()
 	println("maxY=", maxY);
 
 	nNeibCells = 8; 
+	
+	# display(mesh_nodes)
+	# display(mesh_connectivity)
 
 	display("compute cells-related data...");
 	(cell_nodes_X, cell_nodes_Y, cell_mid_points) = reconstructionCells2Nodes2D(nCells,mesh_nodes,mesh_connectivity); #ok
@@ -143,7 +146,7 @@ function preProcessSimpleTriMesh()
 	);
 
 
-	fname = "testTriMesh2d";
+	fname = "testQuadMesh2d";
 	
 	fnameBSON = string(fname,".bson")
 	fnameVTK =  string(fname)
