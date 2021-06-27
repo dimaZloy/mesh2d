@@ -22,7 +22,6 @@
 
 end
 
-
 @everywhere struct mesh2d
 	nCells::Int64
 	nNodes::Int64
@@ -30,7 +29,7 @@ end
 	nBSets::Int64							##  number of boundaries  
 	xNodes::Array{Float64,1} 				##  mesh_nodes[nNodesx3]
 	yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
-	mesh_connectivity::Array{Float64,2} 	## [nCellsx3]
+	mesh_connectivity::Array{Int64,2} 	## [nCellsx3]
 	bc_data::Array{Int64,2}
 	bc_indexes::Array{Int64,1}
 	cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
@@ -41,8 +40,8 @@ end
 	cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
 	cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
 	cell_edges_length::Array{Float64,2} 	## [nCellsx4]
-	cell_stiffness::Array{Float64,2} 		## [nCellsx4]
-	cell_clusters::Array{Float64,2} 		## [nNodesx8]
+	cell_stiffness::Array{Int64,2} 		## [nCellsx4]
+	cell_clusters::Array{Int64,2} 		## [nNodesx8]
 	node_stencils::Array{Float64,2} 		## [nNodesx8]
 	maxArea::Float64
 	maxEdgeLength::Float64
@@ -52,6 +51,36 @@ end
 	#node2cellsL2up::Array{Float64,2} 		## [nCellsx3]
 	#node2cellsL2down::Array{Float64,2} 		## [nCellsx3]
 end
+
+# @everywhere struct mesh2d
+	# nCells::Int64
+	# nNodes::Int64
+	# nNeibCells::Int64						## max number of neighbors 
+	# nBSets::Int64							##  number of boundaries  
+	# xNodes::Array{Float64,1} 				##  mesh_nodes[nNodesx3]
+	# yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
+	# mesh_connectivity::Array{Float64,2} 	## [nCellsx3]
+	# bc_data::Array{Int64,2}
+	# bc_indexes::Array{Int64,1}
+	# cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
+	# cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
+	# cell_mid_points::Array{Float64,2} 		## [nCellsx2]
+	# cell_areas::Array{Float64,1} 			## [nCellsx1]
+	# Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
+	# cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
+	# cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
+	# cell_edges_length::Array{Float64,2} 	## [nCellsx4]
+	# cell_stiffness::Array{Float64,2} 		## [nCellsx4]
+	# cell_clusters::Array{Float64,2} 		## [nNodesx8]
+	# node_stencils::Array{Float64,2} 		## [nNodesx8]
+	# maxArea::Float64
+	# maxEdgeLength::Float64
+	# VTKCells::Array{MeshCell,1}
+	# #cell2nodes::Array{Float64,2} 			## [nCellsx8]
+	# # AUX:
+	# #node2cellsL2up::Array{Float64,2} 		## [nCellsx3]
+	# #node2cellsL2down::Array{Float64,2} 		## [nCellsx3]
+# end
 
 # flux approximation:
 #  1 - AUSM+

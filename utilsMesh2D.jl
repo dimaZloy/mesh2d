@@ -17,7 +17,7 @@ function computeTrgArea2D(x1::Float64, x2::Float64, x3::Float64, y1::Float64, y2
 end
 
 
-function computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y)
+function computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y)::Array{Float64,1}
 
 	cell_areas = zeros(Float64, nCells);
 
@@ -45,7 +45,7 @@ function computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y)
 end
 
 
-function computeNormal2Edge2D(x1::Float64, y1::Float64, x2::Float64, y2::Float64)
+function computeNormal2Edge2D(x1::Float64, y1::Float64, x2::Float64, y2::Float64)::Array{Float64,1}
 
 
 #   data 27.04.2010
@@ -222,7 +222,7 @@ end
 
 
 
-function computeCellClusters2D(nNodes::Int64, nCells::Int64, nNeibCells::Int64, mesh_connectivity)
+function computeCellClusters2D(nNodes::Int64, nCells::Int64, nNeibCells::Int64, mesh_connectivity)::Array{Int64,2}
 
 #cluster_size = 7;
 cell_clusters =zeros(Int64, nNodes, nNeibCells);
@@ -665,7 +665,7 @@ end #function
 # end
 
 
-function computeCellStiffnessM2D(nCells,bc_indexes,bc_data,mesh_connectivity)
+function computeCellStiffnessM2D(nCells,bc_indexes,bc_data,mesh_connectivity)::Array{Int64,2}
 
 	cell_stiffness = zeros(Int64, nCells,4);
 

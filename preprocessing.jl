@@ -1,13 +1,13 @@
 
-using PyPlot;
-using WriteVTK;
-using CPUTime;
-using BSON: @load
-using BSON: @save
+# using PyPlot;
+# using WriteVTK;
+# using CPUTime;
+# using BSON: @load
+# using BSON: @save
 
 
 
-function preProcess(meshFile::String)
+function preProcess(meshFile::String,nThreads::Int64)
 
 	
 	debugPlotMesh = false;
@@ -69,13 +69,18 @@ function preProcess(meshFile::String)
 
 	display("compute edge normals...");
 	(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
-
-
-	display("compute cells connectivity...");
+	
+	display("compute cells connectivity serial ...");
 	CPUtic();
-	#cell_stiffness = computeCellStiffness2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
-	cell_stiffness = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	cell_stiffnessSerial = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
 	CPUtoc();
+	
+	display("compute cells connectivity distributed ... ");
+	CPUtic();
+	cell_stiffness = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes,	bc_data, mesh_connectivity);
+	CPUtoc();	
+	
+	
 
 	display("compute cell clusters...");
 	cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 

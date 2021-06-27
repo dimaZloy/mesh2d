@@ -16,7 +16,7 @@
 # include("utilsMesh2D.jl");	
 # include("preprocessing.jl");	
 
-function preProcessSimpleTriMesh()
+function preProcessSimpleTriMesh(nThreads::Int64)
 
 
 	include("simpleTriMesh.jl");	
@@ -64,10 +64,18 @@ function preProcessSimpleTriMesh()
 	(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
 
 
-	display("compute cells connectivity...");
+	display("compute cells connectivity serial ...");
 	CPUtic();
-	cell_stiffness = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	cell_stiffnessSerial = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
 	CPUtoc();
+	
+	display("compute cells connectivity distributed ... ");
+	CPUtic();
+	cell_stiffness = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes,	bc_data, mesh_connectivity);
+	CPUtoc();
+	
+	#display("difference:")
+	#display(cell_stiffness - cell_stiffnessSerial)
 
 	display("compute cell clusters...");
 	cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
