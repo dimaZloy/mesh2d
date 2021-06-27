@@ -1,4 +1,27 @@
 
+@everywhere mutable struct fields2d_shared
+	
+	## even more slowly !!!
+	##UphsCells::Array{Float64,2} 
+	##UphsNodes::Array{Float64,2}
+	
+	densityCells::SharedArray{Float64,1}
+	UxCells::SharedArray{Float64,1}
+	UyCells::SharedArray{Float64,1}
+	pressureCells::SharedArray{Float64,1}
+	aSoundCells::SharedArray{Float64,1}
+	VMAXCells::SharedArray{Float64,1}
+
+	densityNodes::SharedArray{Float64,1}
+	UxNodes::SharedArray{Float64,1}
+	UyNodes::SharedArray{Float64,1}
+	pressureNodes::SharedArray{Float64,1}
+	
+	#UconsCellsOld::Array{Float64,2}
+	#UconsCellsNew::Array{Float64,2}
+
+end
+
 @everywhere mutable struct fields2d	
 	
 	## even more slowly !!!
@@ -20,6 +43,15 @@
 	#UconsCellsOld::Array{Float64,2}
 	#UconsCellsNew::Array{Float64,2}
 
+end
+
+@everywhere struct mesh2d_shared
+	mesh_connectivity::SharedArray{Int64,2} 	## [nCellsx3]
+	Z::SharedVector{Float64} 					## [nCellsx1] 1/cell_areas
+	cell_edges_Nx::SharedArray{Float64,2} 		## [nCellsx4]
+	cell_edges_Ny::SharedArray{Float64,2} 		## [nCellsx4]
+	cell_edges_length::SharedArray{Float64,2} 	## [nCellsx4]
+	cell_stiffness::SharedArray{Int64,2} 		## [nCellsx4]
 end
 
 @everywhere struct mesh2d
@@ -52,35 +84,7 @@ end
 	#node2cellsL2down::Array{Float64,2} 		## [nCellsx3]
 end
 
-# @everywhere struct mesh2d
-	# nCells::Int64
-	# nNodes::Int64
-	# nNeibCells::Int64						## max number of neighbors 
-	# nBSets::Int64							##  number of boundaries  
-	# xNodes::Array{Float64,1} 				##  mesh_nodes[nNodesx3]
-	# yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
-	# mesh_connectivity::Array{Float64,2} 	## [nCellsx3]
-	# bc_data::Array{Int64,2}
-	# bc_indexes::Array{Int64,1}
-	# cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
-	# cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
-	# cell_mid_points::Array{Float64,2} 		## [nCellsx2]
-	# cell_areas::Array{Float64,1} 			## [nCellsx1]
-	# Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
-	# cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
-	# cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
-	# cell_edges_length::Array{Float64,2} 	## [nCellsx4]
-	# cell_stiffness::Array{Float64,2} 		## [nCellsx4]
-	# cell_clusters::Array{Float64,2} 		## [nNodesx8]
-	# node_stencils::Array{Float64,2} 		## [nNodesx8]
-	# maxArea::Float64
-	# maxEdgeLength::Float64
-	# VTKCells::Array{MeshCell,1}
-	# #cell2nodes::Array{Float64,2} 			## [nCellsx8]
-	# # AUX:
-	# #node2cellsL2up::Array{Float64,2} 		## [nCellsx3]
-	# #node2cellsL2down::Array{Float64,2} 		## [nCellsx3]
-# end
+
 
 # flux approximation:
 #  1 - AUSM+
@@ -120,7 +124,7 @@ end
 	maxDensityConstrained::Float64
 end
 
-struct plotCONTROLS
+@everywhere struct plotCONTROLS
 	contoursType::Int8 # 0 - filled contours , 1 - contour lines only
 	nContours::Int8 # number of contours to plot 
 	rhoMINcont::Float64 #min density
@@ -128,17 +132,8 @@ struct plotCONTROLS
 	productionVideo::Int8 # flag to production video 
 end
 
-# struct MESH
-	# nCells::Int64; #number of cells
-	# nNodes::Int64; #number of nodes
-	# HX::Float64; # max cell size  in domain 
-	# maxXcoord::Float64; # bounding box: max x
-	# minXcoord::Float64; # bounding box: min x
-	# maxYcoord::Float64; # bounding box: max y
-	# minYcoord::Float64;	# bounding box: max y
-# end
 
-struct outputCONTROLS
+@everywhere struct outputCONTROLS
 	verbosity::Int8
 	header::String 
 	saveResiduals::Int8
@@ -149,7 +144,7 @@ struct outputCONTROLS
 	fileNameVTK::String
 end
 
-mutable struct DYNAMICCONTROLS
+@everywhere mutable struct DYNAMICCONTROLS
 	flowTime::Float64 # actual physical time
 	cpuTime::Float64 # cpu time
 	tau::Float64 # tau 
