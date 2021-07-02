@@ -161,6 +161,16 @@ function preProcess(meshFile::String,nThreads::Int64)
 			push!(VTKCells, c);
 		end
 	end
+
+
+	display("Compute computeNode2CellsL2 matrices ... ")
+
+	node2cellL2up = zeros(Int64,nCells,8);
+	node2cellL2down = zeros(Int64,nCells,8);
+	
+	computeNode2CellsL2(nCells,mesh_connectivity, cell_stiffness,node2cellL2up, node2cellL2down);
+	
+	display("done ... ")
 	
 
 	testMesh = mesh2d(
@@ -186,11 +196,9 @@ function preProcess(meshFile::String,nThreads::Int64)
 		node_stencils,
 		maxArea,
 		maxSideLength,
-		VTKCells
-		# cell2nodes,
-		# AUX:
-		# node2cellsL2up,
-		# node2cellsL2down
+		VTKCells,
+		node2cellL2up,
+		node2cellL2down
 	);
 
 

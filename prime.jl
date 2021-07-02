@@ -30,6 +30,7 @@ end
 
 include("primeObjects.jl"); ## solver2d objects and controls 
 include("computeCellsStiffnessMatrixDistributed.jl")
+include("computeNode2CellsL2.jl")
 include("readGambitNeuFile.jl");
 include("utilsMesh2D.jl");
 include("preprocessing.jl");
