@@ -1,7 +1,7 @@
 
 
 using Distributed;
-const numThreads = 4;
+const numThreads = 8;
 
 
 if (numThreads != 1)
@@ -38,11 +38,17 @@ include("preprocessSimpleTriMesh.jl");
 include("preprocessSimpleQuadMesh.jl");
 
 
-preProcess("testMixedMesh2d.neu",numThreads);
-preProcessSimpleTriMesh(numThreads);
-preProcessSimpleQuadMesh(numThreads);
+# preProcess("testMixedMesh2d.neu",numThreads);
+# preProcessSimpleTriMesh(numThreads);
+# preProcessSimpleQuadMesh(numThreads);
 
-#preProcess("testMeshStep2d.neu");
+#preProcess("testStep2dBaseTri.neu",numThreads);
+#preProcess("testStep2dBaseTriSmooth.neu",numThreads);
+
+@time preProcess("2mixinglayer_150x60.neu",numThreads);
+@time preProcess("2mixinglayer_300x120.neu",numThreads);
+@time preProcess("2mixinglayer_600x240.neu",numThreads);
+
 
 
 

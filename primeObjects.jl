@@ -45,14 +45,25 @@ end
 
 end
 
-@everywhere struct mesh2d_shared
-	mesh_connectivity::SharedArray{Int64,2} 	## [nCellsx3]
-	Z::SharedVector{Float64} 					## [nCellsx1] 1/cell_areas
-	cell_edges_Nx::SharedArray{Float64,2} 		## [nCellsx4]
-	cell_edges_Ny::SharedArray{Float64,2} 		## [nCellsx4]
-	cell_edges_length::SharedArray{Float64,2} 	## [nCellsx4]
-	cell_stiffness::SharedArray{Int64,2} 		## [nCellsx4]
-end
+# @everywhere struct mesh2d_shared
+	# mesh_connectivity::SharedArray{Int64,2} 	## [nCellsx3]
+	# Z::SharedVector{Float64} 					## [nCellsx1] 1/cell_areas
+	# cell_edges_Nx::SharedArray{Float64,2} 		## [nCellsx4]
+	# cell_edges_Ny::SharedArray{Float64,2} 		## [nCellsx4]
+	# cell_edges_length::SharedArray{Float64,2} 	## [nCellsx4]
+	# cell_stiffness::SharedArray{Int64,2} 		## [nCellsx4]
+# end
+
+# @everywhere struct mesh2d_shared
+	# mesh_connectivity::SharedArray{Int64,2} 	## [nCellsx3]
+	# Z::SharedVector{Float64} 					## [nCellsx1] 1/cell_areas
+	# cell_edges_Nx::SharedArray{Float64,2} 		## [nCellsx4]
+	# cell_edges_Ny::SharedArray{Float64,2} 		## [nCellsx4]
+	# cell_edges_length::SharedArray{Float64,2} 	## [nCellsx4]
+	# cell_stiffness::SharedArray{Int64,2} 		## [nCellsx4]
+	# node2cellsL2up::SharedArray{Int64,2} 				## [nCellsx8]
+	# node2cellsL2down::SharedArray{Int64,2} 			## [nCellsx8]
+# end
 
 @everywhere struct mesh2d
 	nCells::Int64
@@ -68,6 +79,7 @@ end
 	cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
 	cell_mid_points::Array{Float64,2} 		## [nCellsx2]
 	cell_areas::Array{Float64,1} 			## [nCellsx1]
+	HX::Array{Float64,1}
 	Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
 	cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
 	cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
@@ -78,8 +90,9 @@ end
 	maxArea::Float64
 	maxEdgeLength::Float64
 	VTKCells::Array{MeshCell,1}
-	node2cellsL2up::Array{Int64,2} 			## [nCellsx4]
-	node2cellsL2down::Array{Int64,2} 		## [nCellsx4]
+	node2cellsL2up::Array{Int64,2} 			## [nCellsx8]
+	node2cellsL2down::Array{Int64,2} 		## [nCellsx8]
+	cells2nodes::Array{Int64,2}
 end
 
 
@@ -102,6 +115,16 @@ end
 #  2 - 3rd order TVD RK (depricated)
 #  3 - 4th order general compact RK
 
+
+@everywhere struct solutionCellsT
+	dt::Float64
+	flowTime::Float64
+	nCells::Int64
+	denistyCells::Array{Float64,1}
+	UxCells::Array{Float64,1}
+	UyCells::Array{Float64,1}
+	pressureCells::Array{Float64,1}
+end
 
 @everywhere struct SOLVER2D
 	FLUXtype::Int8

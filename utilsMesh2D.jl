@@ -72,68 +72,78 @@ end
 
 
 
-function computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y)
+function computeCellNormals2D(nCells::Int64,mesh_connectivity::Array{Int64,2},cell_nodes_X::Array{Float64,2},cell_nodes_Y::Array{Float64,2})
 
-cell_edjes_Nx = zeros(Float64, nCells,4);
-cell_edjes_Ny = zeros(Float64, nCells,4);
-cell_edjes_lengths = zeros(Float64, nCells,4);
+	cell_edjes_Nx = zeros(Float64, nCells,4);
+	cell_edjes_Ny = zeros(Float64, nCells,4);
+	cell_edjes_lengths = zeros(Float64, nCells,4);
+	HX = zeros(Float64, nCells);
 
-N1 = zeros(Float64, 3);
-N2 = zeros(Float64, 3);
-N3 = zeros(Float64, 3);
-N4 = zeros(Float64, 3);
+	N1 = zeros(Float64, 3);
+	N2 = zeros(Float64, 3);
+	N3 = zeros(Float64, 3);
+	N4 = zeros(Float64, 3);
 
 
-for i=1:nCells
+	for i=1:nCells
 
-	z = mesh_connectivity[i,2];
+		z = mesh_connectivity[i,2];
 
-	if (z==2)
+		if (z==2)
 
-		N1 = computeNormal2Edge2D(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2]);
-		N2 = computeNormal2Edge2D(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3]);
-		N3 = computeNormal2Edge2D(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,4], cell_nodes_Y[i,4]);
-		N4 = computeNormal2Edge2D(cell_nodes_X[i,4], cell_nodes_Y[i,4],cell_nodes_X[i,1], cell_nodes_Y[i,1]);
+			N1 = computeNormal2Edge2D(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2]);
+			N2 = computeNormal2Edge2D(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3]);
+			N3 = computeNormal2Edge2D(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,4], cell_nodes_Y[i,4]);
+			N4 = computeNormal2Edge2D(cell_nodes_X[i,4], cell_nodes_Y[i,4],cell_nodes_X[i,1], cell_nodes_Y[i,1]);
+			
+			cell_edjes_Nx[i,1] = N1[1];
+			cell_edjes_Nx[i,2] = N2[1];
+			cell_edjes_Nx[i,3] = N3[1];
+			cell_edjes_Nx[i,4] = N4[1];
+
+			cell_edjes_Ny[i,1] = N1[2];
+			cell_edjes_Ny[i,2] = N2[2];
+			cell_edjes_Ny[i,3] = N3[2];
+			cell_edjes_Ny[i,4] = N4[2];
+
+			cell_edjes_lengths[i,1] = N1[3];
+			cell_edjes_lengths[i,2] = N2[3];
+			cell_edjes_lengths[i,3] = N3[3];
+			cell_edjes_lengths[i,4] = N4[3];
+
+
+		elseif (z==3)
+
+			N1 = computeNormal2Edge2D(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2]);
+			N2 = computeNormal2Edge2D(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3]);
+			N3 = computeNormal2Edge2D(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,1], cell_nodes_Y[i,1]);
+			
+			cell_edjes_Nx[i,1] = N1[1];
+			cell_edjes_Nx[i,2] = N2[1];
+			cell_edjes_Nx[i,3] = N3[1];
+
+			cell_edjes_Ny[i,1] = N1[2];
+			cell_edjes_Ny[i,2] = N2[2];
+			cell_edjes_Ny[i,3] = N3[2];
+
+			cell_edjes_lengths[i,1] = N1[3];
+			cell_edjes_lengths[i,2] = N2[3];
+			cell_edjes_lengths[i,3] = N3[3];
+
+		end # if
 		
-		cell_edjes_Nx[i,1] = N1[1];
-		cell_edjes_Nx[i,2] = N2[1];
-		cell_edjes_Nx[i,3] = N3[1];
-		cell_edjes_Nx[i,4] = N4[1];
-
-		cell_edjes_Ny[i,1] = N1[2];
-		cell_edjes_Ny[i,2] = N2[2];
-		cell_edjes_Ny[i,3] = N3[2];
-		cell_edjes_Ny[i,4] = N4[2];
-
-		cell_edjes_lengths[i,1] = N1[3];
-		cell_edjes_lengths[i,2] = N2[3];
-		cell_edjes_lengths[i,3] = N3[3];
-		cell_edjes_lengths[i,4] = N4[3];
-
-
-	elseif (z==3)
-
-		N1 = computeNormal2Edge2D(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2]);
-		N2 = computeNormal2Edge2D(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3]);
-		N3 = computeNormal2Edge2D(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,1], cell_nodes_Y[i,1]);
 		
-		cell_edjes_Nx[i,1] = N1[1];
-		cell_edjes_Nx[i,2] = N2[1];
-		cell_edjes_Nx[i,3] = N3[1];
+		
+		max_edge_length, id = findmax( cell_edjes_lengths[i,:]);
+		HX[i] = max_edge_length;
+		
+		
 
-		cell_edjes_Ny[i,1] = N1[2];
-		cell_edjes_Ny[i,2] = N2[2];
-		cell_edjes_Ny[i,3] = N3[2];
+	end # for
 
-		cell_edjes_lengths[i,1] = N1[3];
-		cell_edjes_lengths[i,2] = N2[3];
-		cell_edjes_lengths[i,3] = N3[3];
 
-	end # if
 
-end # for
-
-   return cell_edjes_Nx, cell_edjes_Ny,cell_edjes_lengths; 
+   return cell_edjes_Nx, cell_edjes_Ny,cell_edjes_lengths, HX;
 
 end
 
@@ -575,95 +585,6 @@ end #C
 end #function 
 
 
-# DEPRICATED!!!
-# function computeCellStiffness2D(nCells,bc_indexes,bc_data,mesh_connectivity)
-# cell_stiffness = zeros(Int64, nCells,4);
-
-# #nbc = size(bc_indexes,1);
-# nbc = length(bc_indexes);
-# for m=1:nbc
-    # i = bc_data[m,1];
-    # k = bc_data[m,3];
-    # cell_stiffness[i,k] = bc_indexes[m];				
-# end
-
-# p1 = 0;
-# p2 = 0;
-# p3 = 0;
-# p4 = 0;
-
-# k1 = 0;
-# k2 = 0;
-# k3 = 0;
-# k4 = 0;
-
-# #fCells = [];
-
-
-# for i = 1:nCells
-
-	# et::Int64 = mesh_connectivity[i,2];
-	# if (et == 2)
-		# p1 = mesh_connectivity[i,4];
-		# p2 = mesh_connectivity[i,5];
-		# p3 = mesh_connectivity[i,6];
-		# p4 = mesh_connectivity[i,7];
-	# elseif (et == 3)
-
-		# p1 = mesh_connectivity[i,4];
-		# p2 = mesh_connectivity[i,5];
-		# p3 = mesh_connectivity[i,6];
-	# end
-
-	# for k=1:nCells
-
-		# if (et == 2)
-		
-		# k1 = mesh_connectivity[k,4];
-		# k2 = mesh_connectivity[k,5];
-		# k3 = mesh_connectivity[k,6];
-		# k4 = mesh_connectivity[k,7];
-
-		# if ( (p1 == k1 || p1 == k2 || p1 == k3 || p1 == k4) && (p2 == k1 || p2 == k2 || p2 == k3 || p2 == k4) && (i!=k) )
-			# cell_stiffness[i,1] = k;
-		# end
-		# if ( (p2 == k1 || p2 == k2 || p2 == k3 || p2 == k4) && (p3 == k1 || p3 == k2 || p3 == k3 || p3 == k4) && (i!=k) )
-			# cell_stiffness[i,2] = k;
-		# end
-		# if ( (p3 == k1 || p3 == k2 || p3 == k3 || p3 == k4) && (p4 == k1 || p4 == k2 || p4 == k3 || p4 == k4) && (i!=k) )
-			# cell_stiffness[i,3] = k;
-		# end
-		# if ( (p4 == k1 || p4 == k2 || p4 == k3 || p4 == k4) && (p1 == k1 || p1 == k2 || p1 == k3 || p1 == k4) && (i!=k) )
-			# cell_stiffness[i,4] = k;
-		# end
-
-		# elseif (et == 3)
-
-		# k1 = mesh_connectivity[k,4];
-		# k2 = mesh_connectivity[k,5];
-		# k3 = mesh_connectivity[k,6];
-
-		# if ( (p1 == k1 || p1 == k2 || p1 == k3 ) && (p2 == k1 || p2 == k2 || p2 == k3 ) && (i!=k) )
-			# cell_stiffness[i,1] = k;
-		# end
-		# if ( (p2 == k1 || p2 == k2 || p2 == k3 ) && (p3 == k1 || p3 == k2 || p3 == k3 ) && (i!=k) )
-			# cell_stiffness[i,2] = k;
-		# end
-		# if ( (p3 == k1 || p3 == k2 || p3 == k3 ) && (p1 == k1 || p1 == k2 || p1 == k3 ) && (i!=k) )
-			# cell_stiffness[i,3] = k;
-		# end
-
-
-		# end #if
-
-	# end #k
-
-# end #i
-
-
-# return  cell_stiffness;
-# end
-
 
 function computeCellStiffnessM2D(nCells,bc_indexes,bc_data,mesh_connectivity)::Array{Int64,2}
 
@@ -833,44 +754,288 @@ function computeCellStiffnessM2D(nCells,bc_indexes,bc_data,mesh_connectivity)::A
 end
 
 
-
-function distibuteCellsInThreads(nThreads::Int64, nCells::Int64 )
+##DEPRICATED
+# function distibuteCellsInThreads(nThreads::Int64, nCells::Int64 )
 
  
- 	if (nThreads>1)
+ 	# if (nThreads>1)
 		
-  		cellsThreads = zeros(Int64,nThreads,2);
-		#cellsThreads = SharedArray{Int64}(nThreads,2);
+  		# cellsThreads = zeros(Int64,nThreads,2);
+		# #cellsThreads = SharedArray{Int64}(nThreads,2);
 
-    	#cout << "nThreads: " <<  nThreads << endl;
-    	#cout << "nCells: " <<  get_num_cells() << endl;
-    	nParts = floor(nCells/nThreads);
-    	#cout << "nParts: " <<  nParts << endl;
+    	# #cout << "nThreads: " <<  nThreads << endl;
+    	# #cout << "nCells: " <<  get_num_cells() << endl;
+    	# nParts = floor(nCells/nThreads);
+    	# #cout << "nParts: " <<  nParts << endl;
 
 
-	    for i=1:nThreads
-    		cellsThreads[i,2] =  nCells - nParts*(nThreads-i );
-		end
+	    # for i=1:nThreads
+    		# cellsThreads[i,2] =  nCells - nParts*(nThreads-i );
+		# end
 	
 
-    	for i=1:nThreads
-      		cellsThreads[i,1] =  cellsThreads[i,2] - nParts + 1;
-		end
+    	# for i=1:nThreads
+      		# cellsThreads[i,1] =  cellsThreads[i,2] - nParts + 1;
+		# end
 
-    	cellsThreads[1,1] = 1;
+    	# cellsThreads[1,1] = 1;
 
-		#display(cellsThreads);	
+		# #display(cellsThreads);	
 		
-		return cellsThreads;
+		# return cellsThreads;
 
-    	#cout << "Partitioning mesh via threads ... " << endl;
-    	#  for (int i=0;i<nThreads;i++)
-    	#    cout << "cellsThreads[i][]: " << cellsThreads1[i] << '\t' << cellsThreads2[i] << endl;
-    	#cout << "done" << endl;
+    	# #cout << "Partitioning mesh via threads ... " << endl;
+    	# #  for (int i=0;i<nThreads;i++)
+    	# #    cout << "cellsThreads[i][]: " << cellsThreads1[i] << '\t' << cellsThreads2[i] << endl;
+    	# #cout << "done" << endl;
 		
-	else				
-		return 0;			
-	end
+	# else				
+		# return 0;			
+	# end
 
-end
+# end
 
+
+
+
+##function computeCells2Nodes2D(testMesh::mesh2d, cells2nodes::SharedArray{Int64,2} )
+function computeCells2Nodes2D(nCells::Int64, mesh_connectivity::Array{Int64,2}, cell_stiffness::Array{Int64,2}, cells2nodes::Array{Int64,2} )
+
+
+  ##cells2nodes = zeros{Int64, nCells,8};
+  
+
+  for C = 1: nCells
+  
+
+     
+      num_nodes::Int64 = mesh_connectivity[C,3];
+      nodesC1::Int64 =   mesh_connectivity[C,4];
+      nodesC2::Int64 =   mesh_connectivity[C,5];
+      nodesC3::Int64 =   mesh_connectivity[C,6];
+      nodesC4::Int64 =  mesh_connectivity[C,7];
+
+
+      if (num_nodes == 3) ## triangle
+      
+        for T = 1:num_nodes
+          
+
+              neib_cell::Int64 = cell_stiffness[C,T];
+              node1::Int64 = 0;
+              node2::Int64 = 0;
+
+			  
+			  nodesP = [];
+
+              if (neib_cell >0) ## internal cell
+              
+                  nodesT1::Int64 = mesh_connectivity[neib_cell,4];
+                  nodesT2::Int64 = mesh_connectivity[neib_cell,5];
+                  nodesT3::Int64 = mesh_connectivity[neib_cell,6];
+
+                  if (nodesC1 == nodesT1 ||  nodesC1 == nodesT2 || nodesC1 == nodesT3)
+				    push!(nodesP, nodesC1);
+                    ##nodesP.push_back(nodesC1);
+				  end
+                  if (nodesC2 == nodesT1 ||  nodesC2 == nodesT2 || nodesC2 == nodesT3)
+					push!(nodesP, nodesC2);
+                    ##nodesP.push_back(nodesC2);
+				  end
+                  if (nodesC3 == nodesT1 ||  nodesC3 == nodesT2 || nodesC3 == nodesT3)
+					push!(nodesP, nodesC3);
+                    ##nodesP.push_back(nodesC3);
+				  end
+
+                  if (size(nodesP,1) == 2)
+                  
+                    node1 = nodesP[1];
+                    node2 = nodesP[2];
+                  
+                  else
+                  
+                      display("something wrong in creating cells2node matrix ... ");
+                      ##throw(-1);
+                  end
+
+              
+              else ## boundary cell
+              
+
+                  if (T == 1)
+                  
+                      node1 = nodesC1;
+                      node2 = nodesC2;
+                  
+                  elseif (T == 2)
+                  
+                       node1 = nodesC2;
+                       node2 = nodesC3;
+                  
+                  elseif (T == 3)
+                  
+                       node1 = nodesC3;
+                       node2 = nodesC1;
+                  end
+
+
+              end ##  end if 
+
+
+              if (T == 1)
+              
+                  cells2nodes[C,1] = node1;
+                  cells2nodes[C,2] = node2;
+              
+              elseif (T == 2)
+              
+                  cells2nodes[C,3] = node1;
+                  cells2nodes[C,4] = node2;
+              
+              elseif (T == 3)
+              
+                  cells2nodes[C,5] = node1;
+                  cells2nodes[C,6] = node2;
+              
+              else
+              
+                  display("something wrong in creating cells2node matrix ... ");
+                  ##throw(-1);
+              end
+
+
+
+
+		end ## end for particular triangular cell
+
+		## end for triangle cells
+	  
+	  
+      elseif (num_nodes == 4) ## quad element
+      
+
+          for T = 1:num_nodes
+          
+
+              neib_cell::Int64 = cell_stiffness[C,T];
+              node1::Int64 = 0;
+              node2::Int64 = 0;
+
+
+              nodesP = [];
+
+
+              if (neib_cell >0) ## internal cell
+              
+                  nodesT1::Int64 = mesh_connectivity[neib_cell,4];
+                  nodesT2::Int64 = mesh_connectivity[neib_cell,5];
+                  nodesT3::Int64 = mesh_connectivity[neib_cell,6];
+                  nodesT4::Int64 = mesh_connectivity[neib_cell,7];
+
+                  if (nodesC1 == nodesT1 ||  nodesC1 == nodesT2 || nodesC1 == nodesT3 || nodesC1 == nodesT4)
+				    push!(nodesP,nodesC1);
+                    #nodesP.push_back(nodesC1);
+				  end
+                  if (nodesC2 == nodesT1 ||  nodesC2 == nodesT2 || nodesC2 == nodesT3 || nodesC2 == nodesT4)
+				    push!(nodesP,nodesC2);
+                    ##nodesP.push_back(nodesC2);
+				  end
+                  if (nodesC3 == nodesT1 ||  nodesC3 == nodesT2 || nodesC3 == nodesT3 || nodesC3 == nodesT4)
+				    push!(nodesP,nodesC3); 
+                    ##nodesP.push_back(nodesC3);
+				  end
+                  if (nodesC4 == nodesT1 ||  nodesC4 == nodesT2 || nodesC4 == nodesT3 || nodesC4 == nodesT4)
+					push!(nodesP,nodesC4);
+                    ##nodesP.push_back(nodesC4);
+				  end
+
+
+                  if (size(nodesP,1)  == 2)
+                  
+                    node1 = nodesP[1];
+                    node2 = nodesP[2];
+                  
+                  else
+                  
+                      display("something wrong in creating cells2node matrix ... ");
+                      ##throw(-1);
+                  end
+
+              
+              else
+
+                  if (T == 1)
+                  
+                      node1 = nodesC1;
+                      node2 = nodesC2;
+                  
+                  elseif (T == 2)
+                  
+                       node1 = nodesC2;
+                       node2 = nodesC3;
+                  
+                  elseif (T == 3)
+                  
+                       node1 = nodesC3;
+                       node2 = nodesC4;
+                  
+                  elseif (T == 4)
+                  
+                       node1 = nodesC4;
+                       node2 = nodesC1;
+                  end
+
+
+              end  ##  end boundary cell
+
+
+
+
+              if (T == 1)
+              
+                  cells2nodes[C,1] = node1;
+                  cells2nodes[C,2] = node2;
+              
+              elseif (T == 2)
+              
+                  cells2nodes[C,3] = node1;
+                  cells2nodes[C,4] = node2;
+            
+              elseif (T == 3)
+			  
+                  cells2nodes[C,5] = node1;
+                  cells2nodes[C,6] = node2;
+
+              elseif (T == 4)
+              
+                  cells2nodes[C,7] = node1;
+                  cells2nodes[C,8] = node2;
+
+              else
+              
+                  display("something wrong in creating cells2node matrix ... ");
+                  throw(-1);
+              end
+
+            end ## 
+			
+			## end for quad element
+
+      else
+      
+          display("something wrong in creating cells2node matrix ... ");
+          display("unknown element type: must be triangle or quad ... ");
+		  
+          ##throw(-1);
+      end
+
+
+
+
+  end ## end global loop for cells
+  
+  return cells2nodes;
+
+  ## cout << "done " << endl;
+
+end ## function

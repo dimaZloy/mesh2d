@@ -35,45 +35,50 @@ function preProcess(meshFile::String,nThreads::Int64)
 	#meshNodesX = view(mesh_nodes,:,2,:);
 	#meshNodesY = view(mesh_nodes,:,3,:);
 
-	display("calculate bounding box for the computational domain ...");
+	# display("calculate bounding box for the computational domain ...");
 
-	(minX,txt) = findmin(xNodes); 
-	(maxX,txt) = findmax(xNodes);
+	# (minX,txt) = findmin(xNodes); 
+	# (maxX,txt) = findmax(xNodes);
 
-	(minY,txt) = findmin(yNodes);
-	(maxY,txt) = findmax(yNodes);
+	# (minY,txt) = findmin(yNodes);
+	# (maxY,txt) = findmax(yNodes);
 
 
-	println("minX=", minX);
-	println("maxX=", maxX);
-	println("minY=", minY);
-	println("maxY=", maxY);
+	# println("minX=", minX);
+	# println("maxX=", maxX);
+	# println("minY=", minY);
+	# println("maxY=", maxY);
 
 
 	nNeibCells::Int64 = 8; 
 
 	display("compute cells-related data...");
+	CPUtic();
 	(cell_nodes_X, cell_nodes_Y, cell_mid_points) = reconstructionCells2Nodes2D(nCells,mesh_nodes,mesh_connectivity); #ok
-
+	CPUtoc();
 
 	xCells = zeros(Float64, nCells);
 	yCells = zeros(Float64, nCells);
 	xCells = cell_mid_points[:,1];
 	yCells = cell_mid_points[:,2];
-
+	HX = zeros(Float64, nCells);
 
 
 	display("compute cell areas...");
+	CPUtic();
 	cell_areas = computeCellsAreas2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
+	CPUtoc();
 
 
 	display("compute edge normals...");
-	(cell_edges_Nx, cell_edges_Ny, cell_edges_length) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
-	
-	display("compute cells connectivity serial ...");
 	CPUtic();
-	cell_stiffnessSerial = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	(cell_edges_Nx, cell_edges_Ny, cell_edges_length, HX) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
 	CPUtoc();
+	
+	# display("compute cells connectivity serial ...");
+	# CPUtic();
+	# cell_stiffnessSerial = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
+	# CPUtoc();
 	
 	display("compute cells connectivity distributed ... ");
 	CPUtic();
@@ -83,50 +88,14 @@ function preProcess(meshFile::String,nThreads::Int64)
 	
 
 	display("compute cell clusters...");
+	CPUtic();
 	cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
-
+	CPUtoc();
+	
 	display("compute node stencils...");
+	CPUtic();
 	node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, nNeibCells, mesh_nodes,cell_clusters, cell_mid_points); 
-	#node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, xNodes,yNodes,cell_clusters, cell_mid_points); 
-
-	# xN = zeros(4,nCells);
-	# yN = zeros(4,nCells);
-
-	# for i=1:nCells
-
-		# z = mesh_connectivity[i,2];
-		   
-		# if (z ==2)
-
-			# xN[1,i] =		  cell_nodes_X[i,1];
-			# xN[2,i] =		  cell_nodes_X[i,2];
-			# xN[3,i] =		  cell_nodes_X[i,3];
-			# xN[4,i] =		  cell_nodes_X[i,1];
-
-			# yN[1,i] =		  cell_nodes_Y[i,1];
-			# yN[2,i] =		  cell_nodes_Y[i,2];
-			# yN[3,i] =		  cell_nodes_Y[i,3];
-			# yN[4,i] =		  cell_nodes_Y[i,1];
-
-		# elseif (z == 3)
-
-			# xN[1,i] =		  cell_nodes_X[i,1];
-			# xN[2,i] =		  cell_nodes_X[i,2];
-			# xN[3,i] =		  cell_nodes_X[i,3];
-			# xN[4,i] =		  cell_nodes_X[i,1];
-
-			# yN[1,i] =		  cell_nodes_Y[i,1];
-			# yN[2,i] =		  cell_nodes_Y[i,2];
-			# yN[3,i] =		  cell_nodes_Y[i,3];
-			# yN[4,i] =		  cell_nodes_Y[i,1];
-
-		# end #if
-
-	# end #for
-
-	#display("compute node2cellsL2 matrix ... ");
-	#include("nodes2cellsL2.jl");
-	#node2cellsL2up, node2cellsL2down = calculateNode2cellsL2matrix(nCells, nNodes, mesh_connectivity, cell_stiffness); ## 
+	CPUtoc();
 
 	Z = 1.0 ./cell_areas;
 
@@ -135,6 +104,35 @@ function preProcess(meshFile::String,nThreads::Int64)
 	
 	(maxSide,id) = findmax(cell_edges_length);
 	maxSideLength = maxSide;
+	
+
+
+	display("Compute computeNode2CellsL2 matrices ... ")
+	CPUtic();
+	node2cellL2up = zeros(Int64,nCells,8);
+	node2cellL2down = zeros(Int64,nCells,8);
+	
+	computeNode2CellsL2(nCells,mesh_connectivity, cell_stiffness,node2cellL2up, node2cellL2down);
+	CPUtoc();
+	display("done ... ")
+	
+	display("Compute compute cellsnodes matrix ... ")
+	CPUtic();
+	cells2nodes = zeros(Int64,nCells,8);
+	computeCells2Nodes2D(nCells,mesh_connectivity, cell_stiffness, cells2nodes )
+	CPUtoc();
+	display("done ... ")
+	
+	
+	###############################################################################################
+	display("save mesh to VTK...  ")
+	CPUtic();
+	
+	
+	fname = split(meshFile, ".");	
+	fnameBSON = string(fname[1],".bson")
+	fnameVTK =  string(fname[1])
+
 	
 	VTKCells = MeshCell[];
 	
@@ -161,16 +159,16 @@ function preProcess(meshFile::String,nThreads::Int64)
 			push!(VTKCells, c);
 		end
 	end
-
-
-	display("Compute computeNode2CellsL2 matrices ... ")
-
-	node2cellL2up = zeros(Int64,nCells,8);
-	node2cellL2down = zeros(Int64,nCells,8);
 	
-	computeNode2CellsL2(nCells,mesh_connectivity, cell_stiffness,node2cellL2up, node2cellL2down);
+	#saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
 	
-	display("done ... ")
+	vtkfile = vtk_grid(fnameVTK, xNodes,yNodes, VTKCells);
+	densityNodes = zeros(Float64,nNodes);
+	vtk_point_data(vtkfile, densityNodes, "dummy");
+	outfiles = vtk_save(vtkfile);	
+	
+	CPUtoc();
+	display("done")
 	
 
 	testMesh = mesh2d(
@@ -187,6 +185,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 		cell_nodes_Y,
 		cell_mid_points,
 		cell_areas,
+		HX,
 		Z,
 		cell_edges_Nx,
 		cell_edges_Ny,
@@ -198,24 +197,67 @@ function preProcess(meshFile::String,nThreads::Int64)
 		maxSideLength,
 		VTKCells,
 		node2cellL2up,
-		node2cellL2down
+		node2cellL2down,
+		cells2nodes
 	);
 
-
-	fname = split(meshFile, ".");
 	
-	fnameBSON = string(fname[1],".bson")
-	fnameVTK =  string(fname[1])
 	
+	display("save mesh structure to *bson ")
+	CPUtic();
 	@save fnameBSON testMesh
-	
-	#saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
-	
-	vtkfile = vtk_grid(fnameVTK, xNodes,yNodes, VTKCells);
-	densityNodes = zeros(Float64,nNodes);
-	vtk_point_data(vtkfile, densityNodes, "dummy");
-	outfiles = vtk_save(vtkfile);	
+	CPUtoc();
+	display("done")
 	
 	
+	
+	
+	##saveDistributedMesh2d(testMesh, fnameBSON);
 	
 end
+
+
+# function saveDistributedMesh2d(testMesh::mesh2d, fnameBSON::String)
+
+
+	
+	# mesh_connectivity = SharedArray{Int64}(testMesh.nCells, 7); 
+	# Z = SharedVector{Float64}(testMesh.nCells);	
+	# cell_edges_Nx = SharedArray{Float64}(testMesh.nCells,4);
+	# cell_edges_Ny = SharedArray{Float64}(testMesh.nCells,4);
+	# cell_edges_length = SharedArray{Float64}(testMesh.nCells,4);
+	# cell_stiffness = SharedArray{Int64}(testMesh.nCells,4);
+	# node2cellsL2up = SharedArray{Int64}(testMesh.nCells,8);
+	# node2cellsL2down = SharedArray{Int64}(testMesh.nCells,8); 
+
+
+	# for i = 1:testMesh.nCells
+		
+		# mesh_connectivity[i,:] = testMesh.mesh_connectivity[i,:]
+		# Z[i] = testMesh.Z[i]
+		# cell_edges_Nx[i,:] = testMesh.cell_edges_Nx[i,:]
+		# cell_edges_Ny[i,:] = testMesh.cell_edges_Ny[i,:]
+		# cell_edges_length[i,:] = testMesh.cell_edges_length[i,:]
+		# cell_stiffness[i,:] = testMesh.cell_stiffness[i,:]
+		# node2cellsL2up[i,:] = testMesh.node2cellsL2up[i,:]
+		# node2cellsL2down[i,:] = testMesh. node2cellsL2down[i,:];
+		
+	# end
+	
+	
+	# testMesh_shared = mesh2d_shared(
+		# mesh_connectivity,
+		# Z,
+		# cell_edges_Nx,
+		# cell_edges_Ny,
+		# cell_edges_length,
+		# cell_stiffness,
+		# node2cellsL2up,
+		# node2cellsL2down
+	# );
+
+	# fnameBSON_shared = string(fnameBSON,"_shared");
+
+	# @save fnameBSON_shared testMesh_shared
+
+# end
