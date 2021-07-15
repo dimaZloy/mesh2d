@@ -82,14 +82,16 @@ function preProcess(meshFile::String,nThreads::Int64)
 	
 	display("compute cells connectivity distributed ... ");
 	CPUtic();
-	cell_stiffness = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes,	bc_data, mesh_connectivity);
+	(cell_stiffness, cell_stiffnessSA, mesh_connectivitySA)  = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes,	bc_data, mesh_connectivity);
 	CPUtoc();	
 	
 	
 
-	display("compute cell clusters...");
+	display("compute cell clusters distributed...");
 	CPUtic();
-	cell_clusters = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
+	#cell_clusters  = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
+	#display(cell_clusters)
+	cell_clusters  = computeCellClustersDistributed(nNodes, nCells, nNeibCells, mesh_connectivitySA);
 	CPUtoc();
 	
 	display("compute node stencils...");

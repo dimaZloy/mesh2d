@@ -30,6 +30,7 @@ end
 
 include("primeObjects.jl"); ## solver2d objects and controls 
 include("computeCellsStiffnessMatrixDistributed.jl")
+include("computeCellsClustersMatrixDistributed.jl")
 include("computeNode2CellsL2.jl")
 include("readGambitNeuFile.jl");
 include("utilsMesh2D.jl");
@@ -45,9 +46,10 @@ include("preprocessSimpleQuadMesh.jl");
 #preProcess("testStep2dBaseTri.neu",numThreads);
 #preProcess("testStep2dBaseTriSmooth.neu",numThreads);
 
-@time preProcess("2mixinglayer_150x60.neu",numThreads);
+#@time preProcess("2mixinglayer_150x60.neu",numThreads);
 @time preProcess("2mixinglayer_300x120.neu",numThreads);
-@time preProcess("2mixinglayer_600x240.neu",numThreads);
+#@time preProcess("2mixinglayer_600x240.neu",numThreads);
+#@time preProcess("2mixinglayer_1200x480.neu",numThreads);
 
 
 

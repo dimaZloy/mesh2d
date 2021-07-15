@@ -231,53 +231,53 @@ end
 
 
 
+## DEPRICATED
+# function computeCellClusters2D(nNodes::Int64, nCells::Int64, nNeibCells::Int64, mesh_connectivity)::Array{Int64,2}
 
-function computeCellClusters2D(nNodes::Int64, nCells::Int64, nNeibCells::Int64, mesh_connectivity)::Array{Int64,2}
-
-#cluster_size = 7;
-cell_clusters =zeros(Int64, nNodes, nNeibCells);
-
-
-
-for i=1:nNodes
-
-	c_node = i;
-	counter = 0; 
-
-	#cluster = zeros(1,cluster_size);
-
-	cluster = zeros(nNeibCells);
-
-	for j=1:nCells
-
-		num_nodes::Int64 = mesh_connectivity[j,3];
-
-		if (num_nodes == 3 )
-
-			if (c_node == mesh_connectivity[j,4] || c_node == mesh_connectivity[j,5] || c_node == mesh_connectivity[j,6] )
-				counter = counter +1;
-				#cluster[1,counter] = j;
-				cluster[counter] = j;
-			end	
-
-		elseif (num_nodes == 4)
-
-			if (c_node == mesh_connectivity[j,4] || c_node == mesh_connectivity[j,5] || c_node == mesh_connectivity[j,6] || c_node == mesh_connectivity[j,7])
-				counter = counter +1;
-				#cluster[1,counter] = j;
-				cluster[counter] = j;
-			end	
+# #cluster_size = 7;
+# cell_clusters =zeros(Int64, nNodes, nNeibCells);
 
 
-		end
 
-	end #end of j
-	cell_clusters[i,:] = cluster;		
+# for i=1:nNodes
 
-end
+	# c_node = i;
+	# counter = 0; 
 
-return cell_clusters;
-end
+	# #cluster = zeros(1,cluster_size);
+
+	# cluster = zeros(nNeibCells);
+
+	# for j=1:nCells
+
+		# num_nodes::Int64 = mesh_connectivity[j,3];
+
+		# if (num_nodes == 3 )
+
+			# if (c_node == mesh_connectivity[j,4] || c_node == mesh_connectivity[j,5] || c_node == mesh_connectivity[j,6] )
+				# counter = counter +1;
+				# #cluster[1,counter] = j;
+				# cluster[counter] = j;
+			# end	
+
+		# elseif (num_nodes == 4)
+
+			# if (c_node == mesh_connectivity[j,4] || c_node == mesh_connectivity[j,5] || c_node == mesh_connectivity[j,6] || c_node == mesh_connectivity[j,7])
+				# counter = counter +1;
+				# #cluster[1,counter] = j;
+				# cluster[counter] = j;
+			# end	
+
+
+		# end
+
+	# end #end of j
+	# cell_clusters[i,:] = cluster;		
+
+# end
+
+# return cell_clusters;
+# end
 
 
 function computeNodeStencilsSIMPLEX2D(nNodes::Int64, nNeibCells::Int64, mesh_nodes,cell_clusters, cell_mid_points)

@@ -123,8 +123,9 @@ function computeCellStiffnessDistributed(
 		nThreads::Int64,
 		bc_indexes::Array{Int64,1},
 		bc_data::Array{Int64,2},
-		mesh_connectivity::Array{Int64,2})::Array{Int64,2}
-
+		mesh_connectivity::Array{Int64,2})
+		
+		
 	#cell_stiffness = zeros(Int64, nCells,4);
 	cell_stiffnessSA = SharedArray{Int64}(nCells,4);
 	mesh_connectivitySA = SharedArray{Int64}(nCells,7);
@@ -211,8 +212,6 @@ function computeCellStiffnessDistributed(
 	#display(mixedCells)
 	
 	
-	
-	
 	n::Int64 = size(mixedCells,1);
  
 
@@ -275,7 +274,11 @@ function computeCellStiffnessDistributed(
 	 end #%end for i 
 
 
+
+	
+
 	cell_stiffness = zeros(Int64,nCellsX,4);
+	
 	
 	for i = 1:nCellsX
 		cell_stiffness[i,1] = cell_stiffnessSA[i,1];
@@ -284,5 +287,7 @@ function computeCellStiffnessDistributed(
 		cell_stiffness[i,4] = cell_stiffnessSA[i,4];
 	end
 
-	return  cell_stiffness;
+	return  cell_stiffness, cell_stiffnessSA, mesh_connectivitySA; 
 end
+
+
