@@ -65,35 +65,63 @@ end
 	# node2cellsL2down::SharedArray{Int64,2} 			## [nCellsx8]
 # end
 
-@everywhere struct mesh2d
-	nCells::Int64
-	nNodes::Int64
-	nNeibCells::Int64						## max number of neighbors 
-	nBSets::Int64							##  number of boundaries  
+@everywhere struct mesh2d_Int32
+	nCells::Int32
+	nNodes::Int32
+	nNeibCells::Int32						## max number of neighbors 
+	nBSets::Int32							##  number of boundaries  
 	xNodes::Array{Float64,1} 				##  mesh_nodes[nNodesx3]
 	yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
-	mesh_connectivity::Array{Int64,2} 		## [nCellsx7]
-	bc_data::Array{Int64,2}
-	bc_indexes::Array{Int64,1}
+	mesh_connectivity::Array{Int32,2} 		## [nCellsx7]
+	bc_data::Array{Int32,2}
+	bc_indexes::Array{Int32,1}
 	cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
 	cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
 	cell_mid_points::Array{Float64,2} 		## [nCellsx2]
 	cell_areas::Array{Float64,1} 			## [nCellsx1]
 	HX::Array{Float64,1}
-	Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
 	cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
 	cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
 	cell_edges_length::Array{Float64,2} 	## [nCellsx4]
-	cell_stiffness::Array{Int64,2} 			## [nCellsx4]
-	cell_clusters::Array{Int64,2} 			## [nNodesx8]
+	cell_stiffness::Array{Int32,2} 			## [nCellsx4]
+	cell_clusters::Array{Int32,2} 			## [nNodesx8]
 	node_stencils::Array{Float64,2} 		## [nNodesx8]
-	maxArea::Float64
-	maxEdgeLength::Float64
 	VTKCells::Array{MeshCell,1}
-	node2cellsL2up::Array{Int64,2} 			## [nCellsx8]
-	node2cellsL2down::Array{Int64,2} 		## [nCellsx8]
-	cells2nodes::Array{Int64,2}
+	node2cellsL2up::Array{Int32,2} 			## [nCellsx8]
+	node2cellsL2down::Array{Int32,2} 		## [nCellsx8]
+	cells2nodes::Array{Int32,2}
 end
+
+
+# @everywhere struct mesh2d
+	# nCells::Int64
+	# nNodes::Int64
+	# nNeibCells::Int64						## max number of neighbors 
+	# nBSets::Int64							##  number of boundaries  
+	# xNodes::Array{Float64,1} 				##  mesh_nodes[nNodesx3]
+	# yNodes::Array{Float64,1} 				##	mesh_nodes[nNodesx3]
+	# mesh_connectivity::Array{Int64,2} 		## [nCellsx7]
+	# bc_data::Array{Int64,2}
+	# bc_indexes::Array{Int64,1}
+	# cell_nodes_X::Array{Float64,2} 			## [nCellsx4]
+	# cell_nodes_Y::Array{Float64,2} 			## [nCellsx4]
+	# cell_mid_points::Array{Float64,2} 		## [nCellsx2]
+	# cell_areas::Array{Float64,1} 			## [nCellsx1]
+	# HX::Array{Float64,1}
+	# Z::Array{Float64,1} 					## [nCellsx1] 1/cell_areas
+	# cell_edges_Nx::Array{Float64,2} 		## [nCellsx4]
+	# cell_edges_Ny::Array{Float64,2} 		## [nCellsx4]
+	# cell_edges_length::Array{Float64,2} 	## [nCellsx4]
+	# cell_stiffness::Array{Int64,2} 			## [nCellsx4]
+	# cell_clusters::Array{Int64,2} 			## [nNodesx8]
+	# node_stencils::Array{Float64,2} 		## [nNodesx8]
+	# maxArea::Float64
+	# maxEdgeLength::Float64
+	# VTKCells::Array{MeshCell,1}
+	# node2cellsL2up::Array{Int64,2} 			## [nCellsx8]
+	# node2cellsL2down::Array{Int64,2} 		## [nCellsx8]
+	# cells2nodes::Array{Int64,2}
+# end
 
 
 

@@ -1,7 +1,7 @@
 
 
-function computeNode2CellsL2(nCells::Int64, mesh_connectivity::Array{Int64,2}, cell_stiffness::Array{Int64,2},
-	node2cellL2up::Array{Int64,2},node2cellL2down::Array{Int64,2})
+function computeNode2CellsL2(nCells::Int32, mesh_connectivity::Array{Int32,2}, cell_stiffness::Array{Int32,2},
+	node2cellL2up::Array{Int32,2},node2cellL2down::Array{Int32,2})
 
 
 	##node2cellL2up = size(4x2)
@@ -10,32 +10,32 @@ function computeNode2CellsL2(nCells::Int64, mesh_connectivity::Array{Int64,2}, c
 	## for quad control volume: use idexes 1,2; 3,4; 5;6 - then take average value 
 	
 	
-	node2cellL2up1= zeros(Int64,nCells,4);
-	node2cellL2up2= zeros(Int64,nCells,4);
+	node2cellL2up1= zeros(Int32,nCells,4);
+	node2cellL2up2= zeros(Int32,nCells,4);
 	
-	node2cellL2down1= zeros(Int64,nCells,4);
-	node2cellL2down2= zeros(Int64,nCells,4);
+	node2cellL2down1= zeros(Int32,nCells,4);
+	node2cellL2down2= zeros(Int32,nCells,4);
 	
 
 for i=1:nCells, 
     
-    ck::Int64 = mesh_connectivity[i,3]; ##  number of nodes (edges) in the i-cell
+    ck::Int32 = mesh_connectivity[i,3]; ##  number of nodes (edges) in the i-cell
 		
-	p1::Int64 = 0;
-	p2::Int64 = 0;
-	p3::Int64 = 0;
-	p4::Int64 = 0;
+	p1::Int32 = 0;
+	p2::Int32 = 0;
+	p3::Int32 = 0;
+	p4::Int32 = 0;
 	
-	k1::Int64  = 0;
-	k2::Int64  = 0;
-	k3::Int64  = 0;
-	k4::Int64  = 0;
+	k1::Int32  = 0;
+	k2::Int32  = 0;
+	k3::Int32  = 0;
+	k4::Int32  = 0;
 				
-	pDown1::Int64 = 0;
-	pDown2::Int64 = 0;
+	pDown1::Int32 = 0;
+	pDown2::Int32 = 0;
 				
-	pUp1::Int64 = 0;
-	pUp2::Int64 = 0;
+	pUp1::Int32 = 0;
+	pUp2::Int32 = 0;
 	
        
     if (ck == 3)  ##  triangle cell with 3 nodes        
@@ -59,24 +59,24 @@ for i=1:nCells,
     
     for k = 1:ck ## for each node 
         
-			ek::Int64 = cell_stiffness[i,k]; ## get right cell 
+			ek::Int32 = cell_stiffness[i,k]; ## get right cell 
 			
 			
             
             if (ek >=1 && ek<=nCells)
                 
-				# k1::Int64  = 0;
-				# k2::Int64  = 0;
-				# k3::Int64  = 0;
-				# k4::Int64  = 0;
+				# k1::Int32  = 0;
+				# k2::Int32  = 0;
+				# k3::Int32  = 0;
+				# k4::Int32  = 0;
 				
-				# pDown1::Int64 = 0;
-				# pDown2::Int64 = 0;
+				# pDown1::Int32 = 0;
+				# pDown2::Int32 = 0;
 				
-				# pUp1::Int64 = 0;
-				# pUp2::Int64 = 0;
+				# pUp1::Int32 = 0;
+				# pUp2::Int32 = 0;
 				
-                 ekNodes::Int64 = mesh_connectivity[ek,3];  ## get num nodes in neib cell
+                 ekNodes::Int32 = mesh_connectivity[ek,3];  ## get num nodes in neib cell
                 
                 if (ck == 3 )  ##  tri-tri
                      

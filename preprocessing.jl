@@ -7,7 +7,7 @@
 
 
 
-function preProcess(meshFile::String,nThreads::Int64)
+function preProcess(meshFile::String,nThreads::Int32)
 
 	
 	debugPlotMesh = false;
@@ -50,7 +50,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 	# println("maxY=", maxY);
 
 
-	nNeibCells::Int64 = 8; 
+	nNeibCells::Int32 = 8; 
 
 	display("compute cells-related data...");
 	CPUtic();
@@ -82,7 +82,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 	
 	display("compute cells connectivity distributed ... ");
 	CPUtic();
-	(cell_stiffness, cell_stiffnessSA, mesh_connectivitySA)  = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes,	bc_data, mesh_connectivity);
+	(cell_stiffness, mesh_connectivitySA)  = computeCellStiffnessDistributed(nCells, nThreads, bc_indexes, bc_data, mesh_connectivity);
 	CPUtoc();	
 	
 	
@@ -91,7 +91,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 	CPUtic();
 	#cell_clusters  = computeCellClusters2D(nNodes,nCells,nNeibCells, mesh_connectivity); #ok 
 	#display(cell_clusters)
-	cell_clusters  = computeCellClustersDistributed(nNodes, nCells, nNeibCells, mesh_connectivitySA);
+	cell_clusters  = computeCellClustersDistributed(nNodes, nCells, nNeibCells, nThreads, mesh_connectivitySA);
 	CPUtoc();
 	
 	display("compute node stencils...");
@@ -99,20 +99,20 @@ function preProcess(meshFile::String,nThreads::Int64)
 	node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, nNeibCells, mesh_nodes,cell_clusters, cell_mid_points); 
 	CPUtoc();
 
-	Z = 1.0 ./cell_areas;
+	# Z = 1.0 ./cell_areas;
 
-	(maxAreaI,id) = findmax(cell_areas);
-	maxArea = sqrt(maxAreaI);
+	# (maxAreaI,id) = findmax(cell_areas);
+	# maxArea = sqrt(maxAreaI);
 	
-	(maxSide,id) = findmax(cell_edges_length);
-	maxSideLength = maxSide;
+	# (maxSide,id) = findmax(cell_edges_length);
+	# maxSideLength = maxSide;
 	
 
 
 	display("Compute computeNode2CellsL2 matrices ... ")
 	CPUtic();
-	node2cellL2up = zeros(Int64,nCells,8);
-	node2cellL2down = zeros(Int64,nCells,8);
+	node2cellL2up = zeros(Int32,nCells,8);
+	node2cellL2down = zeros(Int32,nCells,8);
 	
 	computeNode2CellsL2(nCells,mesh_connectivity, cell_stiffness,node2cellL2up, node2cellL2down);
 	CPUtoc();
@@ -120,7 +120,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 	
 	display("Compute compute cellsnodes matrix ... ")
 	CPUtic();
-	cells2nodes = zeros(Int64,nCells,8);
+	cells2nodes = zeros(Int32,nCells,8);
 	computeCells2Nodes2D(nCells,mesh_connectivity, cell_stiffness, cells2nodes )
 	CPUtoc();
 	display("done ... ")
@@ -173,7 +173,7 @@ function preProcess(meshFile::String,nThreads::Int64)
 	display("done")
 	
 
-	testMesh = mesh2d(
+	testMesh = mesh2d_Int32(
 		nCells,
 		nNodes,
 		nNeibCells,
@@ -188,15 +188,12 @@ function preProcess(meshFile::String,nThreads::Int64)
 		cell_mid_points,
 		cell_areas,
 		HX,
-		Z,
 		cell_edges_Nx,
 		cell_edges_Ny,
 		cell_edges_length,
 		cell_stiffness,
 		cell_clusters,
 		node_stencils,
-		maxArea,
-		maxSideLength,
 		VTKCells,
 		node2cellL2up,
 		node2cellL2down,
@@ -211,6 +208,43 @@ function preProcess(meshFile::String,nThreads::Int64)
 	CPUtoc();
 	display("done")
 	
+	
+	display("save mesh structure to *hdf5 ")
+	CPUtic();
+	
+	fn = string(fnameBSON,".h5");
+	
+	h5open(fn,"w") do file
+	
+		write(file,"nCells", nCells);
+		write(file,"nNodes", nNodes);
+		write(file,"nNeibCells", nNeibCells);
+		write(file,"nBSets",nBSets );
+		write(file,"xNodes",xNodes );
+		write(file,"yNodes",yNodes);
+		write(file,"mesh_connectivity",mesh_connectivity );
+		write(file,"bc_data", bc_data);
+		write(file,"bc_indexes",bc_indexes );
+		write(file,"cell_nodes_X", cell_nodes_X);
+		write(file,"cell_nodes_Y", cell_nodes_Y);
+		write(file,"cell_mid_points", cell_mid_points);
+		write(file,"cell_areas", cell_areas);
+		write(file,"HX", HX);
+		write(file,"cell_edges_Nx",cell_edges_Nx );
+		write(file,"cell_edges_Ny", cell_edges_Ny);
+		write(file,"cell_edges_length",cell_edges_length );
+		write(file,"cell_stiffness",cell_stiffness );
+		write(file,"cell_clusters", cell_clusters);
+		write(file,"node_stencils", node_stencils);
+		#write(file,"VTKCells", VTKCells);
+		write(file,"node2cellL2up",node2cellL2up );
+		write(file,"node2cellL2down", node2cellL2down);
+		write(file,"cells2nodes",cells2nodes );
+	
+	end
+	
+	CPUtoc();
+	display("done")
 	
 	
 	

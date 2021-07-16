@@ -1,8 +1,8 @@
 
 
-function distibuteNodesInThreadsSA(nThreads::Int64, nNodes::Int64 )::SharedArray{Int64,2}
+function distibuteNodesInThreadsSA(nThreads::Int32, nNodes::Int32 )::SharedArray{Int32,2}
 
-	nodesThreads = SharedArray{Int64}(nThreads,2);
+	nodesThreads = SharedArray{Int32}(Int64(nThreads),2);
  
  	if (nThreads>1)
 		
@@ -27,14 +27,14 @@ function distibuteNodesInThreadsSA(nThreads::Int64, nNodes::Int64 )::SharedArray
 
 end
 
-function computeCellClustersDistributed(nNodes::Int64, nCells::Int64, nNeibCells::Int64, 
-		mesh_connectivitySA::SharedArray{Int64,2})::Array{Int64,2}
+function computeCellClustersDistributed(nNodes::Int32, nCells::Int32, nNeibCells::Int32,nThreads::Int32, 
+		mesh_connectivitySA::SharedArray{Int32,2})::Array{Int32,2}
 
 
-	nodesThreads = distibuteCellsInThreadsSA(numThreads, nNodes); ## partition mesh 
+	nodesThreads = distibuteCellsInThreadsSA(nThreads, nNodes); ## partition mesh 
 	#display(nodesThreads)
 	
-	cell_clustersSA = SharedArray{Int64}(nNodes,nNeibCells);
+	cell_clustersSA = SharedArray{Int32}(Int64(nNodes),Int64(nNeibCells));
 	
 	@everywhere nCellsX = $nCells;
 	@everywhere nNeibCellsX = $nNeibCells;
@@ -42,8 +42,8 @@ function computeCellClustersDistributed(nNodes::Int64, nCells::Int64, nNeibCells
 	
 	@sync @distributed for p in workers()	
 	
-		beginNode::Int64 = nodesThreads[p-1,1];
-		endNode::Int64 = nodesThreads[p-1,2];		
+		beginNode::Int32 = nodesThreads[p-1,1];
+		endNode::Int32 = nodesThreads[p-1,2];		
 		# println("worker: ",p, "\tbegin node: ",beginNode,"\tend node: ", endNode,"\tnCells: ", nCellsX,"\tnNeibCells: ", nNeibCellsX  );
 		
 		kernelCellClusters(beginNode, endNode, nCellsX, nNeibCellsX,  mesh_connectivitySA, cell_clustersSA)				
@@ -52,7 +52,7 @@ function computeCellClustersDistributed(nNodes::Int64, nCells::Int64, nNeibCells
 	@everywhere finalize(kernelCellClusters);		
 	
 	
-	cell_clusters = zeros(Int64, nNodes, nNeibCells );
+	cell_clusters = zeros(Int32, nNodes, nNeibCells );
 	
 	for i = 1:nNodes
 		cell_clusters[i,:] = cell_clustersSA[i,:];
@@ -66,11 +66,11 @@ end
 
 
 
-@everywhere function kernelCellClusters(beginNode::Int64, endNode::Int64, nCells::Int64, nNeibCells::Int64, 
-	mesh_connectivity::SharedArray{Int64,2}, cell_clusters::SharedArray{Int64,2})
+@everywhere function kernelCellClusters(beginNode::Int32, endNode::Int32, nCells::Int32, nNeibCells::Int32, 
+	mesh_connectivity::SharedArray{Int32,2}, cell_clusters::SharedArray{Int32,2})
 
 	#cluster_size = 7;
-	#cell_clusters =zeros(Int64, nNodes, nNeibCells);
+	#cell_clusters =zeros(Int32, nNodes, nNeibCells);
 
 
 	for i=beginNode:endNode
@@ -80,11 +80,11 @@ end
 
 		#cluster = zeros(1,cluster_size);
 
-		cluster = zeros(Int64,nNeibCells);
+		cluster = zeros(Int32,nNeibCells);
 
 		for j=1:nCells
 
-			num_nodes::Int64 = mesh_connectivity[j,3];
+			num_nodes::Int32 = mesh_connectivity[j,3];
 
 			if (num_nodes == 3 )
 

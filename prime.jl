@@ -22,6 +22,8 @@ end
 @everywhere using BSON: @save
 @everywhere using SharedArrays;
 
+using HDF5;
+
 
 ## TODO:
 ## calculateNode2cellsL2matrix - verify 
@@ -46,10 +48,10 @@ include("preprocessSimpleQuadMesh.jl");
 #preProcess("testStep2dBaseTri.neu",numThreads);
 #preProcess("testStep2dBaseTriSmooth.neu",numThreads);
 
-#@time preProcess("2mixinglayer_150x60.neu",numThreads);
-@time preProcess("2mixinglayer_300x120.neu",numThreads);
-#@time preProcess("2mixinglayer_600x240.neu",numThreads);
-#@time preProcess("2mixinglayer_1200x480.neu",numThreads);
+#@time preProcess("2mixinglayer_150x60.neu",Int32(numThreads));
+#@time preProcess("2mixinglayer_300x120.neu",Int32(numThreads));
+#@time preProcess("2mixinglayer_600x240.neu",Int32(numThreads));
+@time preProcess("2mixinglayer_1200x480.neu",Int32(numThreads));
 
 
 

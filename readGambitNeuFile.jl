@@ -39,7 +39,7 @@ function convertBCdata(nBSets, BCindexes, BCData)
 	## BCData::Array{Int64,2}
 	## BCIndexes::Array{Any,1}
 	
-	nBC::Int64 = size(BCData,1);
+	nBC::Int32 = size(BCData,1);
 	#sumBC::Int64 = 0; 
 	
 	#for z=1:size(BCData,1)
@@ -50,9 +50,9 @@ function convertBCdata(nBSets, BCindexes, BCData)
 	#	println("Warning! number of elements in boundary arrays is not correct ...") ;
 	#end
 
-	bc_indexes = ones(Int, nBC)*-nBSets;
+	bc_indexes = ones(Int32, nBC)*-nBSets;
 
-	counter::Int64 = 0;	
+	counter::Int32 = 0;	
 	for k=1:nBSets-1
 		
 		for v= 1:BCindexes[k]
@@ -93,10 +93,10 @@ function readGambitNeuFile2(fileName)
 	
 	
 		z = split(head7);
-		MESH_DATA = zeros(Int64,6);
+		MESH_DATA = zeros(Int32,6);
 	
 		for i=1:size(z,1)
-			MESH_DATA[i] = parse(Int,z[i]);
+			MESH_DATA[i] = parse(Int32,z[i]);
 		end
 	
 		println("NUMNP:\t",MESH_DATA[1] );
@@ -106,9 +106,9 @@ function readGambitNeuFile2(fileName)
 		println("NDFCD:\t",MESH_DATA[5] );
 		println("NDFVL:\t",MESH_DATA[6] );
 		
-		nNodes = MESH_DATA[1];
-		nCells = MESH_DATA[2];
-		nBSets = MESH_DATA[4];
+		nNodes::Int32 = MESH_DATA[1];
+		nCells::Int32 = MESH_DATA[2];
+		nBSets::Int32 = MESH_DATA[4];
 		
 		
 		line = readline(io);
@@ -127,12 +127,12 @@ function readGambitNeuFile2(fileName)
 		
 		line = readline(io);
 	
-		mesh_connectivity = zeros(Int64,nCells,7);
+		mesh_connectivity = zeros(Int32,nCells,7);
 		for N=1:nCells
 			line = readline(io);
 			z = split(line);
 			for i=1:size(z,1)
-				mesh_connectivity[N,i] = parse(Int64,z[i]);
+				mesh_connectivity[N,i] = parse(Int32,z[i]);
 			end
 		end
 		
@@ -160,7 +160,7 @@ function readGambitNeuFile2(fileName)
 	
 	
 		BCNames = [];
-		BCData = zeros(Int,0,3);
+		BCData = zeros(Int32,0,3);
 		BCindexes = [];
 	
 		for B=1:nBSets
@@ -176,21 +176,21 @@ function readGambitNeuFile2(fileName)
 	
 			BCNames = [BCNames; z[1] ];	
 	
-			id1 =parse(Int, z[2]);
-			id2 =parse(Int, z[3]);
-			id3 =parse(Int, z[4]);
-			id4 =parse(Int, z[5]);	
+			id1 =parse(Int32, z[2]);
+			id2 =parse(Int32, z[3]);
+			id3 =parse(Int32, z[4]);
+			id4 =parse(Int32, z[5]);	
 	
 			#println(z[1], '\t', id1,'\t', id2, '\t',  id3, '\t', id4);
 	
-			BCX = zeros(Int,id2,3);
+			BCX = zeros(Int32,id2,3);
 			for C=1:id2
 				line = readline(io);
 				#display(line)
 				z = split(line);
 				#println(z);
 				for i =1:size(z,1)
-					BCX[C,i] = parse(Int,z[i]);	
+					BCX[C,i] = parse(Int32,z[i]);	
 				end
 			end
 			#BCData = [BCData, BCX];
