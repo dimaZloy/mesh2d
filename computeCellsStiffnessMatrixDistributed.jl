@@ -173,7 +173,7 @@ function computeCellStiffnessDistributed(nCells::Int32, nThreads::Int32,
 		cell_stiffness[i,4] = cell_stiffnessSA[i,4];
 	end
 
-	return  cell_stiffness, cell_stiffnessSA, mesh_connectivitySA; 
+	return  cell_stiffness, mesh_connectivitySA; 
 	
 end
 

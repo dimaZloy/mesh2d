@@ -48,10 +48,9 @@ include("preprocessSimpleQuadMesh.jl");
 #preProcess("testStep2dBaseTri.neu",numThreads);
 #preProcess("testStep2dBaseTriSmooth.neu",numThreads);
 
-#@time preProcess("2mixinglayer_150x60.neu",Int32(numThreads));
-#@time preProcess("2mixinglayer_300x120.neu",Int32(numThreads));
-#@time preProcess("2mixinglayer_600x240.neu",Int32(numThreads));
-@time preProcess("2mixinglayer_1200x480.neu",Int32(numThreads));
+
+#@time preProcess("2dmixinglayerUp_delta.neu",Int32(numThreads));
+@time preProcess("2dmixinglayerUp_delta2.neu",Int32(numThreads));
 
 
 

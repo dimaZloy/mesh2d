@@ -86,6 +86,7 @@ function preProcess(meshFile::String,nThreads::Int32)
 	CPUtoc();	
 	
 	
+	#display(mesh_connectivitySA)
 
 	display("compute cell clusters distributed...");
 	CPUtic();
@@ -94,10 +95,14 @@ function preProcess(meshFile::String,nThreads::Int32)
 	cell_clusters  = computeCellClustersDistributed(nNodes, nCells, nNeibCells, nThreads, mesh_connectivitySA);
 	CPUtoc();
 	
+	#display(cell_clusters)
+	
 	display("compute node stencils...");
 	CPUtic();
 	node_stencils = computeNodeStencilsSIMPLEX2D(nNodes, nNeibCells, mesh_nodes,cell_clusters, cell_mid_points); 
 	CPUtoc();
+	
+	#display(node_stencils)
 
 	# Z = 1.0 ./cell_areas;
 
@@ -173,38 +178,39 @@ function preProcess(meshFile::String,nThreads::Int32)
 	display("done")
 	
 
-	testMesh = mesh2d_Int32(
-		nCells,
-		nNodes,
-		nNeibCells,
-		nBSets,
-		xNodes,
-		yNodes,
-		mesh_connectivity,
-		bc_data,
-		bc_indexes,
-		cell_nodes_X,
-		cell_nodes_Y,
-		cell_mid_points,
-		cell_areas,
-		HX,
-		cell_edges_Nx,
-		cell_edges_Ny,
-		cell_edges_length,
-		cell_stiffness,
-		cell_clusters,
-		node_stencils,
-		VTKCells,
-		node2cellL2up,
-		node2cellL2down,
-		cells2nodes
-	);
+	
+	# testMesh = mesh2d_Int32(
+		# nCells,
+		# nNodes,
+		# nNeibCells,
+		# nBSets,
+		# xNodes,
+		# yNodes,
+		# mesh_connectivity,
+		# bc_data,
+		# bc_indexes,
+		# cell_nodes_X,
+		# cell_nodes_Y,
+		# cell_mid_points,
+		# cell_areas,
+		# HX,
+		# cell_edges_Nx,
+		# cell_edges_Ny,
+		# cell_edges_length,
+		# cell_stiffness,
+		# cell_clusters,
+		# node_stencils,
+		# VTKCells,
+		# node2cellL2up,
+		# node2cellL2down,
+		# cells2nodes
+	# );
 
 	
 	
 	display("save mesh structure to *bson ")
 	CPUtic();
-	@save fnameBSON testMesh
+	@save fnameBSON VTKCells
 	CPUtoc();
 	display("done")
 	
@@ -252,48 +258,3 @@ function preProcess(meshFile::String,nThreads::Int32)
 	
 end
 
-
-# function saveDistributedMesh2d(testMesh::mesh2d, fnameBSON::String)
-
-
-	
-	# mesh_connectivity = SharedArray{Int64}(testMesh.nCells, 7); 
-	# Z = SharedVector{Float64}(testMesh.nCells);	
-	# cell_edges_Nx = SharedArray{Float64}(testMesh.nCells,4);
-	# cell_edges_Ny = SharedArray{Float64}(testMesh.nCells,4);
-	# cell_edges_length = SharedArray{Float64}(testMesh.nCells,4);
-	# cell_stiffness = SharedArray{Int64}(testMesh.nCells,4);
-	# node2cellsL2up = SharedArray{Int64}(testMesh.nCells,8);
-	# node2cellsL2down = SharedArray{Int64}(testMesh.nCells,8); 
-
-
-	# for i = 1:testMesh.nCells
-		
-		# mesh_connectivity[i,:] = testMesh.mesh_connectivity[i,:]
-		# Z[i] = testMesh.Z[i]
-		# cell_edges_Nx[i,:] = testMesh.cell_edges_Nx[i,:]
-		# cell_edges_Ny[i,:] = testMesh.cell_edges_Ny[i,:]
-		# cell_edges_length[i,:] = testMesh.cell_edges_length[i,:]
-		# cell_stiffness[i,:] = testMesh.cell_stiffness[i,:]
-		# node2cellsL2up[i,:] = testMesh.node2cellsL2up[i,:]
-		# node2cellsL2down[i,:] = testMesh. node2cellsL2down[i,:];
-		
-	# end
-	
-	
-	# testMesh_shared = mesh2d_shared(
-		# mesh_connectivity,
-		# Z,
-		# cell_edges_Nx,
-		# cell_edges_Ny,
-		# cell_edges_length,
-		# cell_stiffness,
-		# node2cellsL2up,
-		# node2cellsL2down
-	# );
-
-	# fnameBSON_shared = string(fnameBSON,"_shared");
-
-	# @save fnameBSON_shared testMesh_shared
-
-# end
