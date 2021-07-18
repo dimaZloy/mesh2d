@@ -132,93 +132,64 @@ function preProcess(meshFile::String,nThreads::Int32)
 	
 	
 	###############################################################################################
-	display("save mesh to VTK...  ")
-	CPUtic();
+	# display("save mesh to VTK...  ")
+	# CPUtic();
 	
 	
-	fname = split(meshFile, ".");	
-	fnameBSON = string(fname[1],".bson")
-	fnameVTK =  string(fname[1])
+	# fname = split(meshFile, ".");	
+	# fnameBSON = string(fname[1],".bson")
+	# fnameVTK =  string(fname[1])
 
 	
-	VTKCells = MeshCell[];
+	# VTKCells = MeshCell[];
 	
-	for i=1:nCells
+	# for i=1:nCells
 	
-		cellType::Int64 = mesh_connectivity[i,2];
+		# cellType::Int64 = mesh_connectivity[i,2];
 		
-		if (cellType == 2) ## quads
-			inds = Array{Int32}(undef, 4);
-			inds[1] = mesh_connectivity[i,4];
-			inds[2] = mesh_connectivity[i,5];
-			inds[3] = mesh_connectivity[i,6];
-			inds[4] = mesh_connectivity[i,7];
-			c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
-			push!(VTKCells, c);
+		# if (cellType == 2) ## quads
+			# inds = Array{Int32}(undef, 4);
+			# inds[1] = mesh_connectivity[i,4];
+			# inds[2] = mesh_connectivity[i,5];
+			# inds[3] = mesh_connectivity[i,6];
+			# inds[4] = mesh_connectivity[i,7];
+			# c = MeshCell(VTKCellTypes.VTK_QUAD, inds);
+			# push!(VTKCells, c);
 		
-		elseif (cellType == 3) ## triangle
+		# elseif (cellType == 3) ## triangle
 	
-			inds = Array{Int32}(undef, 3);
-			inds[1] = mesh_connectivity[i,4];
-			inds[2] = mesh_connectivity[i,5];
-			inds[3] = mesh_connectivity[i,6];
-			c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
-			push!(VTKCells, c);
-		end
-	end
+			# inds = Array{Int32}(undef, 3);
+			# inds[1] = mesh_connectivity[i,4];
+			# inds[2] = mesh_connectivity[i,5];
+			# inds[3] = mesh_connectivity[i,6];
+			# c = MeshCell(VTKCellTypes.VTK_TRIANGLE, inds);
+			# push!(VTKCells, c);
+		# end
+	# end
 	
-	#saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
+	# #saveMeshToVTK(nCells, nNodes, xNodes, yNodes, mesh_connectivity, fnameVTK);
 	
-	vtkfile = vtk_grid(fnameVTK, xNodes,yNodes, VTKCells);
-	densityNodes = zeros(Float64,nNodes);
-	vtk_point_data(vtkfile, densityNodes, "dummy");
-	outfiles = vtk_save(vtkfile);	
+	# vtkfile = vtk_grid(fnameVTK, xNodes,yNodes, VTKCells);
+	# densityNodes = zeros(Float64,nNodes);
+	# vtk_point_data(vtkfile, densityNodes, "dummy");
+	# outfiles = vtk_save(vtkfile);	
 	
-	CPUtoc();
-	display("done")
-	
+	# CPUtoc();
+	# display("done")
 
 	
-	# testMesh = mesh2d_Int32(
-		# nCells,
-		# nNodes,
-		# nNeibCells,
-		# nBSets,
-		# xNodes,
-		# yNodes,
-		# mesh_connectivity,
-		# bc_data,
-		# bc_indexes,
-		# cell_nodes_X,
-		# cell_nodes_Y,
-		# cell_mid_points,
-		# cell_areas,
-		# HX,
-		# cell_edges_Nx,
-		# cell_edges_Ny,
-		# cell_edges_length,
-		# cell_stiffness,
-		# cell_clusters,
-		# node_stencils,
-		# VTKCells,
-		# node2cellL2up,
-		# node2cellL2down,
-		# cells2nodes
-	# );
-
-	
-	
-	display("save mesh structure to *bson ")
-	CPUtic();
-	@save fnameBSON VTKCells
-	CPUtoc();
-	display("done")
+	# display("save mesh structure to *bson ")
+	# CPUtic();
+	# @save fnameBSON VTKCells
+	# CPUtoc();
+	# display("done")
 	
 	
 	display("save mesh structure to *hdf5 ")
 	CPUtic();
 	
-	fn = string(fnameBSON,".h5");
+	fname = split(meshFile, ".");		
+	fn = string(fname[1],".h5");
 	
 	h5open(fn,"w") do file
 	
