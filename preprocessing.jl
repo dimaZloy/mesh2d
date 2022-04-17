@@ -127,6 +127,7 @@ function preProcess(meshFile::String,nThreads::Int32)
 	CPUtic();
 	cells2nodes = zeros(Int32,nCells,8);
 	computeCells2Nodes2D(nCells,mesh_connectivity, cell_stiffness, cells2nodes )
+	#computeCells2Nodes2Dhybrid(nCells,mesh_connectivity, cell_stiffness, cells2nodes )
 	CPUtoc();
 	display("done ... ")
 	

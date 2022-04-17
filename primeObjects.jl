@@ -93,7 +93,7 @@ end
 end
 
 
-# @everywhere struct mesh2d
+ # @everywhere struct mesh2d
 	# nCells::Int64
 	# nNodes::Int64
 	# nNeibCells::Int64						## max number of neighbors 
