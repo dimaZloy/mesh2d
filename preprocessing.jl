@@ -7,7 +7,7 @@
 
 
 
-function preProcess(meshFile::String,nThreads::Int32)
+function preProcess(meshFile::String,nThreads::Int32; scale::Float64 = 1.0)
 
 	
 	debugPlotMesh = false;
@@ -29,8 +29,10 @@ function preProcess(meshFile::String,nThreads::Int32)
 	xNodes = zeros(Float64, nNodes);
 	yNodes = zeros(Float64, nNodes);
 
-	xNodes = mesh_nodes[:,2];
-	yNodes = mesh_nodes[:,3];
+	for i=1:nNodes
+		xNodes[i] = mesh_nodes[i,2]*scale;
+		yNodes[i] = mesh_nodes[i,3]*scale;
+	end
 
 	#meshNodesX = view(mesh_nodes,:,2,:);
 	#meshNodesY = view(mesh_nodes,:,3,:);

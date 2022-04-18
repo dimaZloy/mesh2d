@@ -49,7 +49,7 @@ include("preprocessSimpleQuadMesh.jl");
 #@time preProcess("testStep2dBaseTriSmooth.neu",Int32(numThreads));
 #@time preProcess("2mixinglayer_300x120.neu",Int32(numThreads));
 
-@time preProcess("cyl2d_supersonic1_BL_test.neu",Int32(numThreads));
+@time preProcess("cyl2d_supersonic1_BL.neu",Int32(numThreads),scale = 0.1);
 
 
 #@time preProcess("2dmixinglayerUp_delta.neu",Int32(numThreads));
