@@ -77,6 +77,18 @@ function preProcess(meshFile::String,nThreads::Int32; scale::Float64 = 1.0)
 	(cell_edges_Nx, cell_edges_Ny, cell_edges_length, HX) = computeCellNormals2D(nCells,mesh_connectivity,cell_nodes_X,cell_nodes_Y); #ok
 	CPUtoc();
 	
+
+	display("compute cell wall distances ...");
+	
+	CPUtic();
+	cell_wall_distances = zeros(Float64,nCells,4);
+	calcCellWallDistances(nCells, cell_nodes_X, cell_nodes_Y, mesh_connectivity, cell_mid_points, cell_wall_distances);
+	
+	#display(cell_wall_distances)
+	
+	CPUtoc();
+	
+	
 	# display("compute cells connectivity serial ...");
 	# CPUtic();
 	# cell_stiffnessSerial = computeCellStiffnessM2D(nCells, bc_indexes, bc_data, mesh_connectivity); #ok 
@@ -209,6 +221,7 @@ function preProcess(meshFile::String,nThreads::Int32; scale::Float64 = 1.0)
 		write(file,"cell_nodes_Y", cell_nodes_Y);
 		write(file,"cell_mid_points", cell_mid_points);
 		write(file,"cell_areas", cell_areas);
+		write(file,"cell_wall_distances", cell_wall_distances);
 		write(file,"HX", HX);
 		write(file,"cell_edges_Nx",cell_edges_Nx );
 		write(file,"cell_edges_Ny", cell_edges_Ny);

@@ -148,6 +148,54 @@ function computeCellNormals2D(nCells::Int32,mesh_connectivity::Array{Int32,2},ce
 end
 
 
+function calcPoint2LineDistance(x1::Float64,y1::Float64,x2::Float64,y2::Float64,px::Float64,py::Float64)::Float64
+
+	m::Float64 = 0.0;
+	if abs(x2-x1) > eps(Float64)
+		m = (y2-y1)/(x2-x1);
+	end
+	
+	A::Float64 = m;
+	B::Float64 = -1.0;
+	C = -y1 + m*x1;
+	
+	return abs(A*px + B*py+C)/sqrt(A*A + B*B);
+	
+end
+
+
+function calcCellWallDistances(nCells::Int32, cell_nodes_X::Array{Float64,2}, cell_nodes_Y::Array{Float64,2}, 
+		mesh_connectivity::Array{Int32,2}, cell_mid_points::Array{Float64,2}, cell_wall_distances::Array{Float64,2})
+
+	## compute abs length of perpendecular from the cell mid point to the edges 
+
+	for i=1:nCells
+
+		z::Int32 = mesh_connectivity[i,2];
+
+		if (z==2)
+
+			cell_wall_distances[i,1] = calcPoint2LineDistance(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2], cell_mid_points[i,1], cell_mid_points[i,2]);
+			cell_wall_distances[i,2] = calcPoint2LineDistance(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3], cell_mid_points[i,1], cell_mid_points[i,2]);
+			cell_wall_distances[i,3] = calcPoint2LineDistance(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,4], cell_nodes_Y[i,4], cell_mid_points[i,1], cell_mid_points[i,2]);
+			cell_wall_distances[i,4] = calcPoint2LineDistance(cell_nodes_X[i,4], cell_nodes_Y[i,4],cell_nodes_X[i,1], cell_nodes_Y[i,1], cell_mid_points[i,1], cell_mid_points[i,2]);
+			
+
+
+		elseif (z==3)
+		
+			cell_wall_distances[i,1] = calcPoint2LineDistance(cell_nodes_X[i,1], cell_nodes_Y[i,1],cell_nodes_X[i,2], cell_nodes_Y[i,2], cell_mid_points[i,1], cell_mid_points[i,2]);
+			cell_wall_distances[i,2] = calcPoint2LineDistance(cell_nodes_X[i,2], cell_nodes_Y[i,2],cell_nodes_X[i,3], cell_nodes_Y[i,3], cell_mid_points[i,1], cell_mid_points[i,2]);
+			cell_wall_distances[i,3] = calcPoint2LineDistance(cell_nodes_X[i,3], cell_nodes_Y[i,3],cell_nodes_X[i,4], cell_nodes_Y[i,4], cell_mid_points[i,1], cell_mid_points[i,2]);
+
+
+		end # if
+		
+	end # for
+
+
+end
+
 function reconstructionCells2Nodes2D(nCells::Int32,mesh_nodes::Array{Float64,2},mesh_connectivity::Array{Int32,2})
 
 	#cout << endl << "cell's nodes reconstruction ... ";
