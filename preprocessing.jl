@@ -30,9 +30,15 @@ function preProcess(meshFile::String,nThreads::Int32; scale::Float64 = 1.0)
 	yNodes = zeros(Float64, nNodes);
 
 	for i=1:nNodes
-		xNodes[i] = mesh_nodes[i,2]*scale;
-		yNodes[i] = mesh_nodes[i,3]*scale;
+
+		mesh_nodes[i,2] = mesh_nodes[i,2]*scale;
+		mesh_nodes[i,3] = mesh_nodes[i,3]*scale;
+
+		xNodes[i] = mesh_nodes[i,2];
+		yNodes[i] = mesh_nodes[i,3];
+
 	end
+
 
 	#meshNodesX = view(mesh_nodes,:,2,:);
 	#meshNodesY = view(mesh_nodes,:,3,:);
@@ -52,7 +58,7 @@ function preProcess(meshFile::String,nThreads::Int32; scale::Float64 = 1.0)
 	# println("maxY=", maxY);
 
 
-	nNeibCells::Int32 = 8; 
+	nNeibCells::Int32 = 9; 
 
 	display("compute cells-related data...");
 	CPUtic();
